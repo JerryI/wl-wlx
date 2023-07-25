@@ -1,0 +1,94 @@
+(* /* This is going to be our main component */ *)
+
+(* /* importing singular components */ *)
+
+Head    = ImportComponent["head.wlx"]; 
+Header  = ImportComponent["header.wlx"];
+
+(* /* importing normal components, that can have children */ *)
+
+TextContent := ImportComponent["text.wlx"];
+Code         = ImportComponent["highlight.wlx"];
+
+(* /* Explicit function definition */ *)
+
+colors = {"red", "cyan", "blue", "magenta"};
+
+TOC := With[{T = Table[
+        With[{Style = StringTemplate["color: ``"][RandomChoice[colors]]},
+            <li class="flex gap-x-3">
+              <span><strong class="font-semibold text-gray-900">SSL certificates.</     strong> Anim aute id magna aliqua ad ad non deserunt sunt. Qui irure      qui lorem cupidatat commodo.</span>
+            </li>
+        ]
+        , {i, 1, 10}]},
+
+    <ul class="mt-8 space-y-8 text-gray-600"><T/></ul>
+]
+
+Emphasize[S_String] := <i><S/></i>;
+
+ContentStyle = "relative isolate overflow-hidden bg-white px-6 py-24 sm:py-32 lg:overflow-visible lg:px-0";
+
+Highlighter := ImportComponent["highlight.wlx"];
+
+HighlightTagStyleSet["XSymbol", Function[T, <span class="text-pink-500"><T/></span>]]; 
+HighlightTagStyleSet["Tag",     Function[T, <span class="text-teal-300"><T/></span>]]; 
+HighlightTagStyleSet["XML",     Function[T, <span class="text-teal-300"><T/></span>]];
+
+HighlightTagStyleSet["String",     Function[T, <span class="text-orange-300"><T/></span>]]; 
+HighlightTagStyleSet["Symbol",     Function[T, <span class="text-pink-500"><T/></span>]]; 
+HighlightTagStyleSet["DownValue",     Function[T, <span class="text-fuchsia-500"><T/></span>]]; 
+
+HighlightTagStyleSet["Common",     Function[T, <span class="text-yellow-200"><T/></span>]]; 
+
+HighlightTagStyleSet["Block",     Function[T, <span class="text-violet-500"><T/></span>]]; 
+HighlightTagStyleSet["BlockArg",     Function[T, <span class="text-blue-300"><T/></span>]]; 
+
+<html>
+    <Head/>
+    <body class="min-h-full">        
+        <main>
+            <div class="mx-auto max-w-7xl">
+                <div class="{ContentStyle}">
+                    <Header Title={"Wolfram Language XML"} Caption={"a syntax extension for Wolfram Language that lets you write HTML-like markup inside a Wolfram Language Script like JSX."}/>
+
+                    <div class="mx-auto grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 lg:mx-0 lg:max-w-none lg:grid-cols-2 lg:items-start lg:gap-y-10">
+                        <TextContent Cols={2}>                       
+                            <p>
+                                There is nothing better and more platform-agnostic was developed for designing  complex document structure than HTML & CSS. A tons of examples, well-polished templates are made using those two. Why should we invent anything new, but not just use it?
+                            </p>
+
+                            <Highlighter>
+                                <Highlight>
+                                    <Escape>
+                                        a = 0;
+                                        booba = "Hello";
+
+
+                                        <span class="None">
+                                            <li style="Hfhfdf" popr="{Prop}"></li>
+                                            <Header Title={"Wolfram Language XML"} Caption={"a syntax extension for Wolfram Language that lets you write HTML-like                      markup inside a Wolfram Language Script like JSX."}/>
+                                        </span>
+                                    </Escape>
+                                </Highlight>
+                            </Highlighter>  
+
+                            <ul role="list" class="mt-8 space-y-8 text-gray-600"></ul>
+                            <p class="mt-8">
+                                Et vitae blandit facilisi magna lacus commodo. Vitae sapien duis odio id et. Id blandit molestie auctor fermentum dignissim. Lacus diam tincidunt ac cursus in vel. Mauris varius vulputate et ultrices
+                                hac adipiscing egestas. Iaculis convallis ac tempor et ut. Ac lorem vel integer orci.
+                            </p>
+                            <h2 class="mt-16 text-2xl font-bold tracking-tight text-gray-900">No server? No problem.</h2>
+                            <p class="mt-6">
+                                Id orci tellus laoreet id ac. Dolor, aenean leo, ac etiam consequat in. Convallis arcu ipsum urna nibh. Pharetra, euismod vitae interdum mauris enim, consequat vulputate nibh. Maecenas pellentesque id
+                                sed tellus mauris, ultrices mauris. Tincidunt enim cursus ridiculus mi. Pellentesque nam sed nullam sed diam turpis ipsum eu a sed convallis diam.
+                            </p>
+                        </TextContent>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </body>
+</html>
+
+
