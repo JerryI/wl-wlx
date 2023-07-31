@@ -1,12 +1,15 @@
 #!/usr/bin/env wolframscript
 (* ::Package:: *)
 
-SetDirectory[FileNameJoin[{If[$Notebooks, NotebookDirectory[], Directory[]], "TestData"}]]
+SetDirectory[FileNameJoin[{If[$Notebooks, NotebookDirectory[], Directory[]], "Docs"}]]
 Get[FileNameJoin[{ParentDirectory[Directory[]],"Kernel", "WLX.wl"}]]
 Get[FileNameJoin[{ParentDirectory[Directory[]],"Kernel", "Importer.wl"}]]
+Get[FileNameJoin[{ParentDirectory[Directory[]],"Kernel", "Highlighter.wl"}]]
+Get[FileNameJoin[{ParentDirectory[Directory[]],"Kernel", "WLJS.wl"}]]
 
 document = ImportComponent["index.wlx"];
 document // Print;
+
 
 Export[FileNameJoin[{ParentDirectory[Directory[]], "index.html"}], document, "String"];
 Print["Open index.html in your browser, if it did not happen automatically"];

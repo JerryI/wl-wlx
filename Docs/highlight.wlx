@@ -1,0 +1,31 @@
+Line = 0;
+FooterCaption = If[StringQ[Caption], <footer class="text-sm font-sans pt-3" style="margin-top:auto;"><Caption/></footer>, ""];
+Style = If[TrueQ[FillVSpace], "flex-direction: column; justify-content: normal; align-items: flex-start; display: flex; height:100%;", "flex-direction: column; justify-content: normal; align-items: flex-start; display: flex"];
+
+<code class="text-sm mt-4 mb-4 space-x-4 bg-gray-900 text-white p-4 pl-2" style="{Style}">
+    <span class="flex gap-4"></span>
+    <Table>
+        <span class="flex gap-4">
+            <span class="shrink-0 text-gray-500">
+                <Set>
+                    <Line/>
+                    <Plus>
+                        <Line/>  
+                        <1/>    
+                    </Plus>
+                </Set>
+            </span>
+            <span class="flex-1"> 
+                <J/>
+            </span>
+        </span>
+
+        <List>
+            <J/>
+            <Flatten>
+                <Children/>
+            </Flatten>
+        </List>
+    </Table>
+    <FooterCaption/>
+</code>

@@ -1,0 +1,326 @@
+(* /* This is going to be our main component */ *)
+
+(* /* importing singular components */ *)
+
+Head    := ImportComponent["head.wlx"]; 
+Header  = ImportComponent["header.wlx"];
+
+Banner  = ImportComponent["banner.wlx"];
+
+(* /* importing normal components, that can have children */ *)
+
+TextContent := ImportComponent["text.wlx"];
+Code         = ImportComponent["highlight.wlx"];
+
+(* /* Explicit function definition */ *)
+ 
+ContentStyle = "relative isolate overflow-hidden bg-white px-6 py-12 sm:py-12 lg:overflow-visible lg:px-0";
+
+Heading[Text_] := <h2 class="mt-2 text-2xl font-bold tracking-tight" style="color: #2dd4bf"><Text/></h2>;
+
+Danger[T_] := <span class="text-red-300 font-bold"><T/></span>;
+
+Highlighter := ImportComponent["highlight.wlx"];
+
+HighlightTagStyleSet["XSymbol", Function[T, <span class="text-pink-500"><T/></span>]]; 
+HighlightTagStyleSet["Tag",     Function[T, <span class="text-teal-300"><T/></span>]]; 
+HighlightTagStyleSet["XML",     Function[T, <span class="text-teal-300"><T/></span>]];
+
+HighlightTagStyleSet["String",     Function[T, <span class="text-orange-300"><T/></span>]]; 
+HighlightTagStyleSet["Symbol",     Function[T, <span class="text-pink-500"><T/></span>]]; 
+HighlightTagStyleSet["DownValue",     Function[T, <span class="text-fuchsia-500"><T/></span>]]; 
+
+HighlightTagStyleSet["Common",     Function[T, <span class="text-yellow-200"><T/></span>]]; 
+
+HighlightTagStyleSet["Block",     Function[T, <span class="text-violet-500"><T/></span>]]; 
+HighlightTagStyleSet["BlockArg",     Function[T, <span class="text-blue-300"><T/></span>]]; 
+
+Get["https://raw.githubusercontent.com/JerryI/wljs-plotly/main/src/kernel.wl"];
+
+f[n_, x_] := Abs[((1/Pi)^(1/4) HermiteH[n, x])/(E^(x^2/2) Sqrt[2^n n!])]^2;
+ComplexFigure = Plotly[Evaluate@Append[Table[f[n, x] + n + 1/2, {n, 0, 7}], x^2/2], {x, -4, 4}];
+
+<html>
+    <Head>
+        <WLJSHeader>
+            https://cdn.statically.io/gh/JerryI/wljs-interpreter/main/src/interpreter.js
+            https://cdn.statically.io/gh/JerryI/wljs-interpreter/main/src/core.js
+            https://cdn.statically.io/gh/JerryI/wljs-graphics-d3/main/dist/kernel.js
+            https://cdn.statically.io/gh/JerryI/wljs-plotly/main/dist/kernel.js
+            https://cdn.statically.io/gh/JerryI/wljs-inputs/main/dist/kernel.js
+        </WLJSHeader>
+
+        <style>
+            p {
+                margin-bottom: 0.5em !important;
+            }
+
+            a {
+                color: #2dd4bf !important;
+                font-weight: 600 !important;
+            }
+        </style>
+    </Head>
+    <body class="min-h-full">        
+        <main>
+            <div class="mx-auto max-w-7xl">
+                <div class="{ContentStyle}">
+                    <Header Title={"Wolfram Language XML"} Caption={"a syntax extension for Wolfram Language that lets you write HTML-like markup inside a Wolfram Language Script like JSX."}/>
+
+                    <div class="mx-auto grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 lg:mx-0 lg:max-w-none lg:grid-cols-2 lg:items-start lg:gap-y-0">
+                        <TextContent Cols={1}>                       
+                            <p>
+                                There is nothing better and more platform-agnostic was developed for designing  complex document structure than HTML & CSS. A tons of examples, well-polished templates are made using those two.
+                            </p>
+
+                            <Banner/>
+
+                            <p>
+                                HTML is simple, human-readable and straighforward, but quite limited to the web-applications. Having an XML nature one can extend its functionality using Wolfram Expressions keeping the same syntax used.
+                            </p>
+
+                            <p>
+                                The syntax and component based approach were inspired by&nbsp;<a href="https://react.dev">JSX</a>&nbsp;- a well established and de facto standard Javascript extension for the modern web app development.
+                            </p> 
+
+                            <Heading>Write components with code and markup</Heading>
+
+                            <Heading>Simple rules is the key</Heading>
+                            <p>
+                                This is rather simple to guess, who is who
+                            </p>
+                            <TextContent Cols={2} Indent={0}> 
+                                <Highlighter Caption={"HTML Tag"}>
+                                    <Highlight>
+                                        <Escape>
+                                            <div></div> 
+                                        </Escape>
+                                    </Highlight>
+                                </Highlighter>
+                                <Highlighter Caption={"Wolfram Expression"}>
+                                    <Highlight>
+                                        <Escape>
+                                            <Div></Div>
+                                        </Escape>
+                                    </Highlight>
+                                </Highlighter>
+                            </TextContent>
+
+                            <p>
+                                There is no&nbsp;<code>html/xml</code>&nbsp;tag on Earth, that starts from the capital letter.
+                            </p>
+
+                            <Heading>OwnValues and SubValues</Heading>
+
+                            <p>
+                                Thankfully HTML/XML tag syntax allows to make it clear, where the own-values or sub-values of a given are called.
+                            </p>
+
+                            <TextContent Cols={2} Indent={0} Height={80}> 
+                                <Highlighter Caption={"Regualar WL expression"} FillVSpace={True}>
+                                    <Highlight>
+                                        <Escape>
+                                            TextString[Now]
+                                        </Escape>
+                                    </Highlight>
+                                </Highlighter>
+                                <Highlighter Caption={"WLX expression"} FillVSpace={True}>
+                                    <Highlight>
+                                        <Escape>
+                                            <TextString><Now/></TextString>
+                                        </Escape>
+                                    </Highlight>
+                                </Highlighter>
+                            </TextContent>
+
+                            <p>
+                                <b>First child element is the first argument of a given function and etc.</b>&nbsp;Any self-closing tags represent an own-value of a symbol. 
+                            </p>  
+
+                            <Heading>Passing HTML attributes</Heading>
+
+                            <p>
+                                In the example below, we declare a variable called&nbsp;<code>ClassName</code>&nbsp;and then use it inside WLX by wrapping it in curly braces
+                            </p>  
+
+                            <Highlighter>
+                                <Highlight>
+                                    <Escape>
+                                        ClassName = "show";
+                                        <div class="{ClassName}" style="color: black">Some text...</div>
+                                    </Escape>
+                                </Highlight>
+                            </Highlighter>   
+
+                            <p>
+                                Unlike JSX it does not restric you on writting expression in this form. One can write a plain HTML with CSS along with WLX.     
+                            </p>    
+
+                            <Heading>Iterators, branching?</Heading>         
+                            <p>
+                                <code>HTML/XML</code>&nbsp;is a markup language by its nature. Therfore it is recommended not to use explicitly&nbsp;<code>Table</code>&nbsp;or&nbsp;<code>If</code>&nbsp;expressions inside XML tags, but rather utilize Wolfram Language for that   
+                            </p>                                                           
+                            <Highlighter>
+                                <Highlight>
+                                    <Escape>
+                                    Columns = Table[ 
+                                        <div class="lg:pr-4">
+                                            <div class="text-base leading-7 text-gray-700 ">
+                                                <Child/>
+                                            </div>
+                                        </div>
+                                    , {Child, Children}]; 
+                                    Comment[" "]
+                                    Comment["(* Anything else *)"]
+                                    Comment[" "]
+                                
+                    
+                                    <div class="{Style}">
+                                        <Columns/>
+                                    </div>
+                                    </Escape>
+                                </Highlight>
+                            </Highlighter>
+                            
+                            <Heading>Components</Heading>
+
+                            <p>
+                                This is a key-feature of WLX scripts. There is an in-build structure to embed other WLX scripts into the each other as sor of Wolfram Language expressions
+                            </p>
+
+                            <Highlighter Caption={"main.wlx"}>
+                                <Highlight>
+                                    <Escape>
+                                    Header  = ImportComponent["header.wlx"];
+                                    Comment[" "]
+                                    Comment["(* use it as WL expression *)"]
+                                    Comment[" "]
+                                
+                                    <body>
+                                        <Header Title={"WLX is awesome"}/>
+                                    </body>
+                                    </Escape>
+                                </Highlight>
+                            </Highlighter>
+
+                            <Highlighter Caption={"header.wlx"}>
+                                <Highlight>
+                                    <Escape>
+                                    <h1>
+                                        <Title/>
+                                    </h1>
+                                    </Escape>
+                                </Highlight>
+                            </Highlighter>  
+
+                            <p>
+                                All components or wlx scripts&nbsp;<b>are scoped</b>, i.e. defined variables inside a component will not leak to the global scope.
+                            </p>      
+
+                            <p>
+                                It can also be a normal XML tag with children, however, you need to use&nbsp;<code>SetDelayed</code>&nbsp;instead of&nbsp;<code>Set</code>        
+                            </p>     
+
+                            <Highlighter Caption={"main.wlx"}>
+                                <Highlight>
+                                    <Escape>
+                                    Emphasize  := ImportComponent["emph.wlx"];
+                                    Comment[" "]
+                                    Comment["(* use it as WL expression *)"]
+                                    Comment[" "]
+                                
+                                    <body>
+                                        <Emphasize Color={"red"}>
+                                            <i>Some nested stuff</i>
+                                        </Emphasize>
+                                    </body> 
+                                    </Escape>
+                                </Highlight>
+                            </Highlighter> 
+
+                            <Highlighter Caption={"emph.wlx"}>
+                                <Highlight>
+                                    <Escape>
+                                    <h3 style="{Color}">
+                                        <Children/>
+                                    </h3>
+                                    </Escape>
+                                </Highlight>
+                            </Highlighter>  
+
+                            <Heading>WLJS Support</Heading>
+
+                            <p>
+                                Since the target application is to use in web-applications, there is no reason why not to use WLJS framework, that allows to bring interactive standalone graphics with even some computations running in the browser. See more about it here. 
+                            </p>
+
+                            <p>
+                                For the simples case, one can utilize a standalone regime, where the data used by&nbsp;<a href="https://jerryi.github.io/wljs-docs/docs/interpreter/intro">WLJS</a>&nbsp;is already stored in the browser and no server required
+                            </p>
+
+                            <Highlighter Caption={"Add Javascript libraries to your header component"}>
+                                <Highlight>
+                                    <Escape>
+                                        Get["https://raw.githubusercontent.com/JerryI/wljs-plotly/main/src/kernel.wl"];
+                                        Comment["(* helper functions for interactive plots *)"]
+                                        <head>
+                                            <WLJSHeader>
+                                                https://cdn.statically.io/gh/JerryI/wljs-interpreter/main/src/interpreter.js
+                                                https://cdn.statically.io/gh/JerryI/wljs-interpreter/main/src/core.js
+                                                https://cdn.statically.io/gh/JerryI/wljs-graphics-d3/main/dist/kernel.js
+                                                https://cdn.statically.io/gh/JerryI/wljs-plotly/main/dist/kernel.js
+                                            </WLJSHeader>
+                                        </head>
+                                    </Escape>
+                                </Highlight>
+                            </Highlighter>       
+                            <p>
+                                There are a couple of libraries available (3D graphics, input element and etc), please check for it&nbsp;<a href="https://jerryi.github.io/wljs-docs/docs/">WLJS Docs</a>.
+                            </p>
+                            <p>
+                                To execute any Wolfram Expressions in your browser, use&nbsp;<code>WLJS</code>&nbsp;keyword, or warp it around any desired expression in WLX tree
+                            </p>  
+
+                            <Highlighter Caption={"Define the functions to calculate"}>
+                                <Highlight>
+                                    <Escape>
+                                    f[n_, x_] := Abs[((1/Pi)^(1/4) HermiteH[n, x])/(E^(x^2/2) Sqrt[2^n n!])]^2;
+                                    ComplexFigure = Plotly[Evaluate@Append[Table[f[n, x] + n + 1/2, {n, 0, 7}], x^2/2], {x, -4, 4}];
+                                    </Escape> 
+                                </Highlight>
+                            </Highlighter>   
+
+                            <Highlighter Caption={"Place it on a page"}>
+                                <Highlight>
+                                    <Escape>
+                                        <ComplexFigure/>
+                                    </Escape>
+                                </Highlight>
+                            </Highlighter>                             
+
+                            <WLJS>
+                                <ComplexFigure/>      
+                            </WLJS>  
+
+                            <p>
+                                WLJS interpreter is highly integrated with Javascript and also supports dynamic updates by its own (as well as communication with Wolfram Kernel via websockets), as you can see by the example in the beginning of this page. 
+                            </p>                   
+
+                            <Heading>Things to avoid</Heading>
+
+                            <p>
+                                Since WLX is fully parsed including all XML tags, we would recommend to&nbsp;<Danger>always close tags you are using, or use self-closing tags</Danger>. Many examples on the internet use incorrect HTML template, however modern web-browsers are quite forgiving, unlike WLX.
+                            </p>                  
+
+                            <p>
+                                <Danger>Only one root DOM element is allowed</Danger>&nbsp;in the WLX script. However, you can write many of them, if they enter to any WL expression.
+                            </p>
+                        </TextContent>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </body>
+</html>
+
+

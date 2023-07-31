@@ -1,0 +1,13 @@
+InputSlider = RangeView[{0, 1, 0.1, spiral}] // FrontEndOnly;
+SpiralPlot = Graphics[{
+    Cyan,
+    With[{s = spiral}, 
+      Table[Power[E, -s x / 10] {Sin[x], Cos[x]}, {x, 0, 20Pi, 0.03}]
+    ] // Line // FrontEndOnly
+  }
+, Axes->True, ImageSize->300];
+
+<ul>
+  <li><WLJS><InputSlider/></WLJS></li>
+  <li><WLJS><SpiralPlot/></WLJS></li>
+</ul>

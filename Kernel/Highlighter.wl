@@ -25,6 +25,10 @@ Highlight[str_String] := Module[{open, close, singular, tokens, tree, placeholde
         JerryI`WLX`Private`tokenizer[#, -1, str] & /@ 
          close], #["pos"][[1]] &];
 
+    If[Length[tokens] === 0,
+        (* then it is just pure WL *)
+        Return[StringSplit[StringRiffle[formAString /@ CodeParse[str][[2]], ""], "\n"], Module];
+    ];
 
 
     JerryI`WLX`Private`fetchInnerText[tokens, str];
@@ -80,6 +84,10 @@ formAString[Symbol, "CompoundExpression", content_] :=
   
   ]
 
+formAString[Symbol, "Power", args_] := StringTemplate["``<sup>``</sup>"][formAString[args[[1]]], formAString[args[[2]]] ];
+formAString[Symbol, "Times", args_] := StringRiffle[formAString /@ args, " "];
+
+formAString[Symbol, "Comment", args_] := StringTemplate["``\n"][StringReplace[formAString[args[[1]]], "\""->""]];
 formAString[Symbol, "Set", args_] := StringTemplate["`` = ``"][formAString[args[[1]]], formAString[args[[2]]] ];
 formAString[Symbol, "SetDelayed", args_] := StringTemplate["`` := ``"][formAString[args[[1]]], formAString[args[[2]]] ];
 formAString[Symbol, "Plus", args_] := StringTemplate["`` + ``"][formAString[args[[1]]], formAString[args[[2]]] ]
@@ -116,12 +124,12 @@ formAStringX["Singular", "Expression", token_] := With[{
 formAStringX["Normal", "Expression", token_] := With[{
     block = (StringJoin[HighlightTagStyle["Block"][#[[1]]], "=", HighlightTagStyle["None"]["{"], HighlightTagStyle["BlockArg"][#[[2]]], HighlightTagStyle["None"]["}"]] & /@ token["block"])
 },
-    HighlightTagStyle["Tag"]["&lt;"]<>HighlightTagStyle["XSymbol"][token["head"]]<>If[Length[block]>0," "<>StringRiffle[block, " "]<>" ",""]<>HighlightTagStyle["Tag"]["/&gt;"]<>HighlightTagStyle["Tag"]["&lt;/"]<>HighlightTagStyle["XSymbol"][token["head"]]<>HighlightTagStyle["Tag"]["/&gt;"]
+    HighlightTagStyle["Tag"]["&lt;"]<>HighlightTagStyle["XSymbol"][token["head"]]<>If[Length[block]>0," "<>StringRiffle[block, " "]<>" ",""]<>HighlightTagStyle["Tag"]["&gt;"]<>HighlightTagStyle["Tag"]["&lt;/"]<>HighlightTagStyle["XSymbol"][token["head"]]<>HighlightTagStyle["Tag"]["&gt;"]
 ]
 formAStringX["Nested", "Expression", token_, args_] := With[{
     block = (StringJoin[HighlightTagStyle["Block"][#[[1]]], "=", HighlightTagStyle["None"]["{"], HighlightTagStyle["BlockArg"][#[[2]]], HighlightTagStyle["None"]["}"]] & /@ token["block"])
 },
-    Block[{level = If[NumberQ[level], level+1, 1]}, HighlightTagStyle["Tag"]["&lt;"]<>HighlightTagStyle["XSymbol"][token["head"]]<>If[Length[block]>0," "<>StringRiffle[block, " "]<>" ",""]<>HighlightTagStyle["Tag"]["/&gt;"]<>"\n"<>(args//applyTabs[level])<>"\n"<>HighlightTagStyle["Tag"]["&lt;/"]<>HighlightTagStyle["XSymbol"][token["head"]]<>HighlightTagStyle["Tag"]["/&gt;"]]
+    Block[{level = If[NumberQ[level], level+1, 1]}, HighlightTagStyle["Tag"]["&lt;"]<>HighlightTagStyle["XSymbol"][token["head"]]<>If[Length[block]>0," "<>StringRiffle[block, " "]<>" ",""]<>HighlightTagStyle["Tag"]["&gt;"]<>"\n"<>(args//applyTabs[level])<>"\n"<>HighlightTagStyle["Tag"]["&lt;/"]<>HighlightTagStyle["XSymbol"][token["head"]]<>HighlightTagStyle["Tag"]["&gt;"]]
 ]
 
 (* any HTML tags results in strings *)

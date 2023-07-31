@@ -1,0 +1,19 @@
+If[!NumberQ[Cols], cols = 1, cols = Cols];
+If[NumberQ[Indent], ident = Indent, ident = 8];
+
+Style = StringTemplate["lg:col-span-2 lg:col-start-1 lg:row-start-2 lg:mx-auto lg:grid lg:w-full lg:max-w-7xl lg:grid-cols-`` lg:gap-x-8 lg:px-``"][cols, ident];
+HStyle = If[NumberQ[Height], StringTemplate["height: ``%"][Height], ""];
+
+
+
+Columns = Table[
+    <div class="lg:pr-4" style="{HStyle}">
+        <div class="text-base leading-7 text-gray-700 ">
+            <Piece/>
+        </div>
+    </div>
+, {Piece, Partition[Children // Flatten, Ceiling[Length[Children]/cols] // UpTo]}];
+
+<div class="{Style}">
+    <Columns/>
+</div>
