@@ -1,0 +1,5 @@
+<head>
+    <title>WLX Template</title>
+    <link rel="stylesheet" href="/tailwind.css"/>
+    <Children/>
+</head>

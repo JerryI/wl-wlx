@@ -1,0 +1,13 @@
+ContentList = ImportComponent["components/list.wlx"];
+
+Files = <|
+
+    "Name"     -> FileNameTake[#],
+    "Kind"     -> FileType[#],
+    "Size"     -> If[DirectoryQ[#], Missing[], FileSize[#]],
+    "Modified" -> (Now - FileDate[#]),
+    "Link"     -> FileNameToURLPath[#]
+ 
+|>& /@ FileNames["*", First@Children]; 
+
+<ContentList Data={Files}/> 

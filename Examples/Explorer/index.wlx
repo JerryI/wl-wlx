@@ -1,0 +1,3 @@
+Main = ImportComponent["main.wlx"];
+
+<Main Request={Children}/>

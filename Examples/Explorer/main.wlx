@@ -1,0 +1,53 @@
+Head       := ImportComponent["components/head.wlx"];
+ 
+dir        := ImportComponent["views/directory.wlx"];
+editor     := ImportComponent["views/editor.wlx"];
+image      := ImportComponent["views/image.wlx"];
+dat        := ImportComponent["views/dat.wlx"];
+none       := ImportComponent["views/none.wlx"];
+
+Unprotect[ImageQ]
+
+ImageQ[path_String]    := FileExistsQ[path] && StringMatchQ[path, RegularExpression[".*\\.(png|jpg|svg|bmp|jpeg)$"]]
+
+DatQ[path_String]      := FileExistsQ[path] && StringMatchQ[path, RegularExpression[".*\\.(dat|csv)$"]]
+
+AnyQ[path_String]      := FileExistsQ[path]
+
+View[path_?DirectoryQ] := (Print["Directory!"];     dir[path]   ); 
+View[path_?ImageQ]     := (Print["Image!"];         image[path] );
+View[path_?DatQ]       := (Print["Data!"];          dat[path]   );
+View[path_?AnyQ]       := (Print["Editor!"];        editor[path]);
+View[path_]            := (Print["None!"];          none[path]  );
+
+Path = URLPathToFileName[URLDecode@First[Request]["Path"]];
+If[StringLength[Path] === 0, Path = Directory[]];
+
+<html> 
+    <Head>
+        <WLJSHeader>
+            https://cdn.statically.io/gh/JerryI/wljs-interpreter/main/src/interpreter.js
+            https://cdn.statically.io/gh/JerryI/wljs-interpreter/main/src/core.js
+            https://cdn.statically.io/gh/JerryI/wljs-graphics-d3/main/dist/kernel.js
+            https://cdn.statically.io/gh/JerryI/wljs-plotly/main/dist/kernel.js
+            https://cdn.statically.io/gh/JerryI/wljs-inputs/main/dist/kernel.js
+        </WLJSHeader>        
+    </Head>  
+    <body> 
+        <div class="min-h-full">
+
+            <header class="bg-white shadow">
+                <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+                    <h1 class="text-3xl font-bold tracking-tight text-gray-900">File explorer</h1>
+                </div>
+            </header>
+            <main>
+                <div class="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
+                    <View>
+                        <Path/>
+                    </View>
+                </div>
+            </main>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,9 @@
+Data = Drop[Import[First@Children, "TSV"], 3];
+
+<div>
+    <WLJS>
+        <ListLinePlotly>
+            <Data/>
+        </ListLinePlotly>
+    </WLJS>
+</div>
