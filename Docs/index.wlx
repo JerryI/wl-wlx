@@ -60,7 +60,7 @@ ComplexFigure = Plotly[Evaluate@Append[Table[f[n, x] + n + 1/2, {n, 0, 7}], x^2/
                 font-weight: 600 !important;
             }
         </style>
-    </Head>
+    </Head>   
     <body class="min-h-full">        
         <main>
             <div class="mx-auto max-w-7xl">
@@ -70,27 +70,51 @@ ComplexFigure = Plotly[Evaluate@Append[Table[f[n, x] + n + 1/2, {n, 0, 7}], x^2/
                     <div class="mx-auto grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 lg:mx-0 lg:max-w-none lg:grid-cols-2 lg:items-start lg:gap-y-0">
                         <TextContent Cols={1}>                       
                             <p>
-                                There is nothing better and more platform-agnostic was developed for designing  complex document structure than HTML & CSS. A tons of examples, well-polished templates are made using those two.
+                                WLX produces regular Wolfram Expressions, that can be used to make components, building blocks for GUI, and advanced data representation using modern tools like HTML/CSS and Javascript
                             </p>
+ 
+                            <TextContent Cols={2} Indent={0}> 
+                                <Highlighter Caption={"HTML Tag"}>
+                                    <Highlight>
+                                        <Escape>
+                                            InputSlider = RangeView[{0, 1, 0.   1, spiral}] // FrontEndOnly;
 
-                            <Banner/>
+                                            SpiralPlot = Graphics[{
+                                                Cyan,
+                                                FrontEndOnly@Line@With[{s = spiral}, 
+                                                  Table[Power[E, -s x] {Sin [x], Cos[x]}, {x, 0, 20Pi}]
+                                                ]}];
+                                              Comment[""]
+                                              <div class="bg-white   dark:bg-slate-900 rounded-lg  px-6 py-8  shadow-xl flex    items-center flex-col">
+                                              <WLJS>
+                                                <InputSlider/>
+                                              </WLJS>
+                                              <p class="text-slate-500  dark:text-slate-400 mt-2     text-sm">
+                                                Try to drag this slider
+                                              </p>
+                                              <WLJS>
+                                                <SpiralPlot/>
+                                              </WLJS>
+                                            </div>
+                                        </Escape>
+                                    </Highlight>
+                                </Highlighter>
+                                <Banner/>
+                            </TextContent>
+                            
 
                             <p>
-                                HTML is simple, human-readable and straighforward, but quite limited to the web-applications. Having an XML nature one can extend its functionality using Wolfram Expressions keeping the same syntax used.
+                                HTML is simple, human-readable and straighforward. Having an XML nature it allows to use Wolfram Expressions as tags.
                             </p>
 
-                            <p>
-                                The syntax and component based approach were inspired by&nbsp;<a href="https://react.dev">JSX</a>&nbsp;- a well established and de facto standard Javascript extension for the modern web app development.
-                            </p> 
-
-                            <Heading>Write components with code and markup</Heading>
+                            <Heading>Write components with code and markup!</Heading>
 
                             <Heading>Simple rules is the key</Heading>
                             <p>
                                 This is rather simple to guess, who is who
                             </p>
-                            <TextContent Cols={2} Indent={0}> 
-                                <Highlighter Caption={"HTML Tag"}>
+                            <TextContent Cols={2} Indent={0} Height={80}> 
+                                <Highlighter Caption={"HTML Tag"} FillVSpace={True}>
                                     <Highlight>
                                         <Escape>
                                             <div></div> 
@@ -182,10 +206,15 @@ ComplexFigure = Plotly[Evaluate@Append[Table[f[n, x] + n + 1/2, {n, 0, 7}], x^2/
                                 </Highlight>
                             </Highlighter>
                             
-                            <Heading>Components</Heading>
+                            <p>
+                                WLX expression is Wolfram Language expression too. After parsing it once, it then translates to held expressions that one can use as a regular function.
+                            </p>
+
+
+                            <Heading>Native Components</Heading>
 
                             <p>
-                                This is a key-feature of WLX scripts. There is an in-build structure to embed other WLX scripts into the each other as sor of Wolfram Language expressions
+                                This is a key-feature of WLX scripts. There is an in-build structure to embed other WLX scripts into the each other as sort of Wolfram Language expressions
                             </p>
 
                             <Highlighter Caption={"main.wlx"}>
@@ -248,6 +277,10 @@ ComplexFigure = Plotly[Evaluate@Append[Table[f[n, x] + n + 1/2, {n, 0, 7}], x^2/
                                 </Highlight>
                             </Highlighter>  
 
+                            <p>
+                                The way how you organize your components is not opinionated. Using&nbsp;<code>ImportComponent</code>&nbsp;is just one possibillity shipped with a package. 
+                            </p>
+
                             <Heading>WLJS Support</Heading>
 
                             <p>
@@ -293,7 +326,9 @@ ComplexFigure = Plotly[Evaluate@Append[Table[f[n, x] + n + 1/2, {n, 0, 7}], x^2/
                             <Highlighter Caption={"Place it on a page"}>
                                 <Highlight>
                                     <Escape>
-                                        <ComplexFigure/>
+                                        <WLJS>
+                                            <ComplexFigure/>
+                                        </WLJS>  
                                     </Escape>
                                 </Highlight>
                             </Highlighter>                             
@@ -314,6 +349,11 @@ ComplexFigure = Plotly[Evaluate@Append[Table[f[n, x] + n + 1/2, {n, 0, 7}], x^2/
 
                             <p>
                                 <Danger>Only one root DOM element is allowed</Danger>&nbsp;in the WLX script. However, you can write many of them, if they enter to any WL expression.
+                            </p>
+
+                            <Heading>Linting and syntax highlighting</Heading>
+                            <p>
+                                The syntax of WLX was deeply insired by JSX, therfore there are many simillarities between them. That allows to use native IDE's JSX highlighting for WLX as well. It is not fully accurate, but helps a lot to avoid common mistakes.
                             </p>
                         </TextContent>
                     </div>

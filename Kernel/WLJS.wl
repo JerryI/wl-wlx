@@ -10,7 +10,7 @@ Begin["`Private`"]
 SetAttributes[FrontEndOnly, HoldFirst]
 
 WLJSHeader[list_String] := With[{},
-    StringRiffle[StringTemplate["<script type=\"module\" src=\"``\"></script>"]/@StringSplit[list, "\n"], "\n"]
+    StringRiffle[StringTemplate["<script type=\"module\" src=\"``\"></script>"]/@StringTrim/@StringSplit[list, "\n"], "\n"]
 ]
 
 WLJS[expr_] := With[{uid = CreateUUID[]},
@@ -18,7 +18,7 @@ WLJS[expr_] := With[{uid = CreateUUID[]},
         Global`AttachDOM[uid],
         expr
     }]},
-        StringTemplate["<div class=\"wljs-object\" id=\"``\"></div><script type=\"module\">const global = {}; interpretate(``, {local:{}, global: global})</script>"][uid, ExportString[body, "ExpressionJSON", "Compact"->0]]
+        StringTemplate["<div class=\"wljs-object\" id=\"``\"></div><script type=\"module\">const global = {}; await interpretate(``, {local:{}, global: global})</script>"][uid, ExportString[body, "ExpressionJSON", "Compact"->0]]
     ]
 ]
 

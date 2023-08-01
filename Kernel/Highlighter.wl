@@ -89,6 +89,7 @@ formAString[Symbol, "Times", args_] := StringRiffle[formAString /@ args, " "];
 
 formAString[Symbol, "Comment", args_] := StringTemplate["``\n"][StringReplace[formAString[args[[1]]], "\""->""]];
 formAString[Symbol, "Set", args_] := StringTemplate["`` = ``"][formAString[args[[1]]], formAString[args[[2]]] ];
+formAString[Symbol, "Rule", args_] := StringTemplate["`` -> ``"][formAString[args[[1]]], formAString[args[[2]]] ];
 formAString[Symbol, "SetDelayed", args_] := StringTemplate["`` := ``"][formAString[args[[1]]], formAString[args[[2]]] ];
 formAString[Symbol, "Plus", args_] := StringTemplate["`` + ``"][formAString[args[[1]]], formAString[args[[2]]] ]
 formAString[Symbol, "List", args_] := "{" <> StringRiffle[{formAString /@ args} // Flatten, ", "] <> "}";
@@ -103,6 +104,7 @@ formAString[Symbol, x_String, args_] := StringTemplate["``[``]"][HighlightTagSty
 formAString[Symbol, x_String] := HighlightTagStyle["Symbol"][x]
 formAString[String, x_String] := HighlightTagStyle["String"][x]
 formAString[Integer, i_] := HighlightTagStyle["Number"][ToString[i]]
+formAString[Real, i_] := HighlightTagStyle["Number"][ToString[i]]
 formAString[Symbol, "Pattern", args_] := HighlightTagStyle["Pattern"][formAString[args[[1]]] <> "_" <> formAString[args[[2]]]]
 formAString[Symbol, "Blank", args_] := ""
 

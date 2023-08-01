@@ -75,6 +75,15 @@ Options[ProcessString] = {
   "Localize" -> False
 }
 
+
+Trimmer = Function[str, StringReplace[str, {
+  RegularExpression["\\n|\\t"] -> "", 
+  RegularExpression["\\A(\\s+)"] -> " ", 
+  RegularExpression["(\\s+)\\Z"] -> " "
+}]]
+
+Trimmer = StringTrim
+
 parseTags[str_String] := {
   StringPosition[str, RegularExpression["\\<(\\w*)(\\s*(((\\w|-)*)=\\\"([^\"]+)\")*((\\w*)=\\{([^\\<\\>]+)\\})*)*\\>"]],
   StringPosition[str, RegularExpression["(\\<\\/[^\\<|\\>|\\/]*\\>)"]],
@@ -152,7 +161,7 @@ fetchInnerText = Function[{t, str},
          <|"pos" -> {l + 1, r - 1}, "atom" -> "Text", "block" -> {}, 
           "head" -> "WText", "type" -> 0, "native" -> True, 
           "content" -> (StringTake[StringDrop[str, l], r - l - 1] // 
-             StringTrim)|>
+             Trimmer)|>
          ]
         ]
        , {i, Length[t] - 1}]] // DeleteMissing, 
