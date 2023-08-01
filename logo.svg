@@ -1,4 +1,4 @@
-Logo =  <svg viewBox="0 0 156.2 122.8" style="enable-background: new 0 0 156.2 122.8;">
+<svg viewBox="0 0 156.2 122.8" style="enable-background: new 0 0 156.2 122.8;">
       <style type="text/css">
           .st0 {
               display: none;
@@ -30,19 +30,4 @@ Logo =  <svg viewBox="0 0 156.2 122.8" style="enable-background: new 0 0 156.2 1
       <g><polygon class="st2" points="27,95.4 5.9,61.8 26.8,28.7 31.5,28.7 10.7,61.8 31.6,95.3 	"></polygon></g>
       <g><polygon class="st2" points="102.4,51.7 112.2,11.1 117.7,5.6 107,49.5 105.9,54.2 	"></polygon></g>
       <g><polygon class="st2" points="125.9,95.2 146.9,61.6 126,28.5 121.3,28.5 142.2,61.6 121.2,95.1 	"></polygon></g>
-  </svg> ;
-
-
-<div class="flex p-6 font-mono">
-    <div class="flex-none w-48 relative z-10 before:absolute before:top-1 before:left-1 before:w-full before:h-full" style="margin-top: -4.2em; width: 12em;">
-      <Logo/>
-    </div>
-    <form class="flex-auto pl-6">
-        <div class="relative flex flex-wrap items-baseline before:bg-black before:absolute before:-top-6 before:bottom-0 before:-left-60 before:-right-6">
-            <h1 class="relative w-full flex-none mb-2 text-2xl font-semibold text-white"><Title/></h1>
-            <a href="https://github.com/JerryI/wl-wlx" style="z-index:999">Github Repo</a>
-        </div>
-        <p class="text-xs leading-6 text-slate-500"><Caption/></p>
-    </form>
-</div>
-
+  </svg>

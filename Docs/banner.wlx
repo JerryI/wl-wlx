@@ -7,7 +7,7 @@ SpiralPlot = Graphics[{
   }
 , Axes->True, ImageSize->300];
 
-<div class="bg-white dark:bg-slate-900 rounded-lg px-6 py-8  shadow-xl flex items-center flex-col">
+<div class="bg-white dark:bg-slate-900 rounded-lg px-3 py-4  shadow-xl flex items-center flex-col">
   <WLJS>
     <InputSlider/>
   </WLJS>

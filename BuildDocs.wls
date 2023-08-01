@@ -1,7 +1,7 @@
 #!/usr/bin/env wolframscript
 (* ::Package:: *)
 
-SetDirectory[FileNameJoin[{If[$Notebooks, NotebookDirectory[], Directory[]], "Docs"}]]
+SetDirectory[FileNameJoin[{If[StringQ[NotebookDirectory[]], NotebookDirectory[], DirectoryName[$InputFileName]], "Docs"}]]
 Get[FileNameJoin[{ParentDirectory[Directory[]],"Kernel", "WLX.wl"}]]
 Get[FileNameJoin[{ParentDirectory[Directory[]],"Kernel", "Importer.wl"}]]
 Get[FileNameJoin[{ParentDirectory[Directory[]],"Kernel", "Highlighter.wl"}]]

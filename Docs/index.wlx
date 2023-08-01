@@ -77,39 +77,36 @@ ComplexFigure = Plotly[Evaluate@Append[Table[f[n, x] + n + 1/2, {n, 0, 7}], x^2/
                                 <Highlighter Caption={"HTML Tag"}>
                                     <Highlight>
                                         <Escape>
-                                            InputSlider = RangeView[{0, 1, 0.   1, spiral}] // FrontEndOnly;
-
-                                            SpiralPlot = Graphics[{
-                                                Cyan,
-                                                FrontEndOnly@Line@With[{s = spiral}, 
-                                                  Table[Power[E, -s x] {Sin [x], Cos[x]}, {x, 0, 20Pi}]
-                                                ]}];
-                                              Comment[""]
-                                              <div class="bg-white   dark:bg-slate-900 rounded-lg  px-6 py-8  shadow-xl flex    items-center flex-col">
-                                              <WLJS>
-                                                <InputSlider/>
-                                              </WLJS>
-                                              <p class="text-slate-500  dark:text-slate-400 mt-2     text-sm">
-                                                Try to drag this slider
-                                              </p>
-                                              <WLJS>
-                                                <SpiralPlot/>
-                                              </WLJS>
-                                            </div>
+                                        Heading[Text_] := <h2 class="tracking-tight"><Text/></h2>;
+                                        Comment[" "]
+                                        <body>
+                                     
+                                            <Heading>
+                                                Hello World
+                                            </Heading>
+                                        </body>
                                         </Escape>
                                     </Highlight>
                                 </Highlighter>
-                                <Banner/>
+
+                                <Heading>
+                                                Hello World
+                                </Heading>
+                                
                             </TextContent>
                             
 
+                            <Heading>Write components with code and markup!</Heading>
+                            
+                            <TextContent Cols={2} Indent={0}> 
                             <p>
                                 HTML is simple, human-readable and straighforward. Having an XML nature it allows to use Wolfram Expressions as tags.
                             </p>
 
-                            <Heading>Write components with code and markup!</Heading>
-
-                            <Heading>Simple rules is the key</Heading>
+                                <Banner/>
+                                
+                            </TextContent>
+                            <Heading>Simple rules are the key</Heading>
                             <p>
                                 This is rather simple to guess, who is who
                             </p>
