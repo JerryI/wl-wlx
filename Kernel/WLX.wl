@@ -76,11 +76,11 @@ Options[ProcessString] = {
 }
 
 
-Trimmer = Function[str, StringReplace[str, {
+(*Trimmer = Function[str, StringReplace[str, {
   RegularExpression["\\n|\\t"] -> "", 
   RegularExpression["\\A(\\s+)"] -> " ", 
   RegularExpression["(\\s+)\\Z"] -> " "
-}]]
+}]]*)
 
 Trimmer = StringTrim
 
@@ -121,12 +121,12 @@ tokenizer[s_, r_, str_] :=
     (* parameters passed as title={Title}, usually constants for the components *)     
     block = 
      StringCases[element, 
-      RegularExpression["(\\w*)=\\{([\\w|\\\"|\\-|\\.|\\s|\\d]*)\\}"] -> ("$1" -> "$2") ],
+      RegularExpression["(\\w*)=\\{([\\w|@|\\[|\\]|,|{|}|\\\"|\\-|\\.|\\s|\\d]*)\\}"] -> ("$1" -> "$2") ],
 
     (* HTML/XML properties passed as class="{Class}", usually constants for styles and etc *)  
     prop = 
      StringCases[element, 
-      RegularExpression["(\\w*)=\\\"\\{(\\w*)\\}\\\""] -> ("$1" -> "$2") ],
+      RegularExpression["(\\w*)=\"([^\"|=|{|}]*)\\{(\\w*)\\}([^\"|=|{|}]*)\""] -> ("$1" -> {"$2", "$3", "$4"}) ],
 
     (* static properties like style="background-color: red;" *)
     common = 
@@ -306,7 +306,7 @@ constructWL["Nested", "Expression", token_, args_] := ToExpression[token["head"]
 
 (* any HTML tags results in strings *)
 constructWL["Normal", "HTML", token_] := With[{
-   props = (StringJoinFake[#[[1]], "=\"", ToExpression[#[[2]], InputForm, FakeHold@*ToString], "\""] & /@ token["properties"]),
+   props = (StringJoinFake[#[[1]], "=\"", #[[2,1]], ToExpression[#[[2,2]], InputForm, FakeHold@*ToString], #[[2,3]], "\""] & /@ token["properties"]),
    commns = StringJoinFake[#[[1]], "=\"", #[[2]], "\""] & /@ token["common"]
  },
    StringJoinFake["<", token["head"], " ", StringRiffleFake[Join[props, commns], " "], "></", token["head"], ">"]
@@ -314,7 +314,7 @@ constructWL["Normal", "HTML", token_] := With[{
 
 (* any HTML tags results in strings *)
 constructWL["Singular", "HTML", token_] := With[{
-   props = (StringJoinFake[#[[1]], "=\"", ToExpression[#[[2]], InputForm, FakeHold@*ToString], "\""] & /@ token["properties"]),
+   props = (StringJoinFake[#[[1]], "=\"", #[[2,1]], ToExpression[#[[2,2]], InputForm, FakeHold@*ToString], #[[2,3]], "\""] & /@ token["properties"]),
    commns = StringJoinFake[#[[1]], "=\"", #[[2]], "\""] & /@ token["common"]
   },
    StringJoinFake["<", token["head"], " ", StringRiffleFake[Join[props, commns], " "], "/>"
@@ -326,7 +326,7 @@ constructWL["Singular", "Text", token_] := token["content"]
 
 (* any HTML tags results in strings *)
 constructWL["Nested", "HTML", token_, args_] := With[{
-   props = (StringJoinFake[#[[1]], "=\"", ToExpression[#[[2]], InputForm, FakeHold@*ToString], "\""] & /@ token["properties"]),
+   props = (StringJoinFake[#[[1]], "=\"", #[[2,1]], ToExpression[#[[2,2]], InputForm, FakeHold@*ToString], #[[2,3]], "\""] & /@ token["properties"]),
    commns = StringJoinFake[#[[1]], "=\"", #[[2]], "\""] & /@ token["common"]
   },
    StringJoinFake["<", token["head"], " ", StringRiffleFake[Join[props, commns], " "], ">", StringRiffleFake[{ToStringFake /@ args} // FakeFlatten, ""], "</", token["head"], ">"

@@ -98,10 +98,11 @@ TextString[Now]
 In the example below, we declare a variable called `ClassName` and then use it inside WLX by wrapping it in curly braces
 ```jsx
 ClassName = "show";
-<div class="{ClassName}" style="color: black">
+<div class="{ClassName}" style="color: {ColorName}">
    Some text...
 </div>
 ```
+
 
 ## Iterators, branching, components?
 HTML/XML is a markup language by its nature. Therfore it is recommended not to use explicitly `Table` or `If` expressions inside XML tags, but rather utilize Wolfram Language for that
@@ -135,6 +136,12 @@ Columns = ImportComponent["columns.wlx"];
         </p>        
     </Columns>
 </body>
+```
+
+you can always pass some properties to your component using
+```jsx
+    <Columns PropName={WolframExpression}>
+    ...
 ```
 
 ## License
