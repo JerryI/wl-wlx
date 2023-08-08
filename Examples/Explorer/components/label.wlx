@@ -1,3 +1,13 @@
+(* /*
+    Text-Label
+    -- 
+    @T - any kind of data
+*/ *)
+
+Str = If[!MissingQ[T], T, ""];
+
 <span>
-    <T/>
+    <TextString>
+        <Str/>
+    </TextString>
 </span>

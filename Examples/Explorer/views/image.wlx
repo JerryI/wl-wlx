@@ -1,7 +1,5 @@
-URL = URLBuild[<|"Path" -> FileNameSplit[First@Children], "Query" -> <|"file" -> True|>|>];
-FileName = FileNameTake[First@Children];
+URL = StringJoin["/", URLBuild[<|"Path" -> FileNameSplit[First@Children], "Query" -> <|"file" -> True|>|>]];
 
 <figure class="max-w-lg">
   <img class="h-auto max-w-full rounded-lg" src="{URL}" alt="image description"/>
-  <figcaption class="mt-2 text-sm text-center text-gray-500 dark:text-gray-400"><FileName/></figcaption>
 </figure>

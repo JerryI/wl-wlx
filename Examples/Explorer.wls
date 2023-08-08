@@ -33,7 +33,6 @@ tcp["MessageHandler", "HTTP"] = HTTPPacketQ -> http;
 
 
 index := ImportComponent["index.wlx"];
-
 FileRequestQ[request_] := (!MissingQ[request["Query"]["file"]])
 
 http = HTTPHandler[];

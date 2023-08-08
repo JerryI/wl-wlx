@@ -1,3 +1,5 @@
+(* /* importing dynamic components */ *)
+
 Head       := ImportComponent["components/head.wlx"];
  
 dir        := ImportComponent["views/directory.wlx"];
@@ -5,6 +7,10 @@ editor     := ImportComponent["views/editor.wlx"];
 image      := ImportComponent["views/image.wlx"];
 dat        := ImportComponent["views/dat.wlx"];
 none       := ImportComponent["views/none.wlx"];
+
+Breadcrumbs = ImportComponent["components/breadcrumbs.wlx"];
+
+(* /* view router */ *)
 
 Unprotect[ImageQ]
 
@@ -21,7 +27,9 @@ View[path_?AnyQ]       := (Print["Editor!"];        editor[path]);
 View[path_]            := (Print["None!"];          none[path]  );
 
 Path = URLPathToFileName[URLDecode@First[Request]["Path"]];
-If[StringLength[Path] === 0, Path = Directory[]];
+If[StringLength[Path] === 0, Path = "."];
+
+(* /* HTML Page */ *)
 
 <html> 
     <Head>
@@ -39,9 +47,12 @@ If[StringLength[Path] === 0, Path = Directory[]];
             <header class="bg-white shadow">
                 <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
                     <h1 class="text-3xl font-bold tracking-tight text-gray-900">File explorer</h1>
+                    <Breadcrumbs FileName={Path}/>
                 </div>
+                
             </header>
             <main>
+                
                 <div class="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
                     <View>
                         <Path/>
