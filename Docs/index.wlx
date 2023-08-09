@@ -7,7 +7,7 @@ Header  = ImportComponent["header.wlx"];
 
 Banner  = ImportComponent["banner.wlx"];
 
-(* /* importing normal components, that can have children */ *)
+(* /* importing normal components, that can have $Children */ *)
 
 TextContent := ImportComponent["text.wlx"];
 Code         = ImportComponent["highlight.wlx"];
@@ -190,7 +190,7 @@ ComplexFigure = Plotly[Evaluate@Append[Table[f[n, x] + n + 1/2, {n, 0, 7}], x^2/
                                                 <Child/>
                                             </div>
                                         </div>
-                                    , {Child, Children}]; 
+                                    , {Child, $Children}]; 
                                     Comment[" "]
                                     Comment["(* Anything else *)"]
                                     Comment[" "]
@@ -244,7 +244,7 @@ ComplexFigure = Plotly[Evaluate@Append[Table[f[n, x] + n + 1/2, {n, 0, 7}], x^2/
                             </p>      
 
                             <p>
-                                It can also be a normal XML tag with children, however, you need to use&nbsp;<code>SetDelayed</code>&nbsp;instead of&nbsp;<code>Set</code>        
+                                It can also be a normal XML tag with $Children, however, you need to use&nbsp;<code>SetDelayed</code>&nbsp;instead of&nbsp;<code>Set</code>        
                             </p>     
 
                             <Highlighter Caption={"main.wlx"}>
@@ -268,7 +268,7 @@ ComplexFigure = Plotly[Evaluate@Append[Table[f[n, x] + n + 1/2, {n, 0, 7}], x^2/
                                 <Highlight>
                                     <Escape>
                                     <h3 style="{Color}">
-                                        <Children/>
+                                        <$Children/>
                                     </h3>
                                     </Escape>
                                 </Highlight>

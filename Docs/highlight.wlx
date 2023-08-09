@@ -23,7 +23,7 @@ Style = If[TrueQ[FillVSpace], "flex-direction: column; justify-content: normal; 
         <List>
             <J/>
             <Flatten>
-                <Children/>
+                <$Children/>
             </Flatten>
         </List>
     </Table>

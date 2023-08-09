@@ -12,6 +12,6 @@
         }
       }
     </script>
-    <Children/>
+    <$Children/>
 </head>
 

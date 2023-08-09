@@ -12,7 +12,7 @@ Columns = Table[
             <Piece/>
         </div>
     </div>
-, {Piece, Partition[Children // Flatten, Ceiling[Length[Children]/cols] // UpTo]}];
+, {Piece, Partition[$Children // Flatten, Ceiling[Length[$Children]/cols] // UpTo]}];
 
 <div class="{Style}">
     <Columns/>
