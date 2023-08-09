@@ -1,0 +1,32 @@
+(* /* custom built component */ *)
+ToggleView = ImportComponent["components/toggle.wlx"];
+
+(* /* a regular component from wljs-inputs lib. */ *)
+SliderView = RangeView[{0, 1, 0.1, 0}, "Event"->StringJoin[SID, "-damphing"], "Label"->"Damphing factor"];
+
+(* /* a custom styles to make it pop */ *)
+Styles     = ImportComponent["components/styles.wlx"];
+
+<ul role="list" class="divide-x divide-gray-100">
+    <Styles/>
+    <li class="flex justify-between gap-x-6 py-1">
+       <div class="flex min-w-0 gap-x-4">
+          <div class="min-w-0 flex-auto">    
+            <ToggleView UID={StringJoin[SID, "-gravity"]} Label={"Gravity"}/>
+          </div>
+       </div>
+    </li>
+
+    <li class="flex justify-between gap-x-6 py-1">
+       <div class="flex min-w-0 gap-x-4">
+          <div class="min-w-0 flex-auto">
+             <p class="text-sm font-semibold leading-6 text-gray-900">
+                <WLJS>
+                    <SliderView/>
+                </WLJS>
+             </p>
+             <p class="mt-1 truncate text-xs leading-5 text-gray-500">Drag this slider while gravity is on</p>
+          </div>
+       </div>
+    </li>
+</ul>

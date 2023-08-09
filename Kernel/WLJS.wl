@@ -13,12 +13,12 @@ WLJSHeader[list_String] := With[{},
     StringRiffle[StringTemplate["<script type=\"module\" src=\"``\"></script>"]/@StringTrim/@StringSplit[list, "\n"], "\n"]
 ]
 
-WLJS[expr_] := With[{uid = CreateUUID[]},
+WLJS[expr_] := With[{uid = CreateUUID[], class = If[StringQ[Global`Class], Global`Class, ""]},
     With[{body = Global`FrontEndVirtual[{
         Global`AttachDOM[uid],
         expr
     }]},
-        StringTemplate["<div class=\"wljs-object\" id=\"``\"></div><script type=\"module\">const global = {}; await interpretate(``, {local:{}, global: global})</script>"][uid, ExportString[body, "ExpressionJSON", "Compact"->0]]
+        StringTemplate["<div class=\"wljs-object ``\" id=\"``\"></div><script type=\"module\">const global = {}; await interpretate(``, {local:{}, global: global})</script>"][class, uid, ExportString[body, "ExpressionJSON", "Compact"->0]]
     ]
 ]
 

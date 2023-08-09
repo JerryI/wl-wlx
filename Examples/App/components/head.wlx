@@ -1,0 +1,49 @@
+<head>
+    <title>WLX Template</title>
+    <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet"/>
+
+    <$Children/>
+
+    <script type="module">
+        //just a polyfill, since CDN still carry an old version of WLJS ;(
+        const fakeSocket = () => {
+          return false;
+        }
+
+        fakeSocket.q = []
+
+        fakeSocket.send = (expr) => {
+          console.warn('No connection to a kernel... keeping in a pocket');
+          fakeSocket.q.push(expr)
+        }
+
+        server.socket = fakeSocket;
+
+        core.Offload = core.Hold;
+
+        var socket = new WebSocket("ws://"+window.location.hostname+':'+(Number(window.location.port)+1));
+        socket.onopen = function(e) {
+          console.log("[open]");
+          setTimeout(() => {
+            server.init(socket);
+            fakeSocket.q.forEach((message)=>{
+                socket.send(message);
+            });
+            server.kernel.socket = socket;
+          }, 1);
+        }; 
+
+        socket.onmessage = function(event) {
+          //create global context
+          //callid
+          const uid = Date.now() + Math.floor(Math.random() * 100);
+          var global = {call: uid};
+          interpretate(JSON.parse(event.data), {global: global});
+        };
+
+        socket.onclose = function(event) {
+          console.log(event);
+          alert('Connection lost. Please, update the page to see new changes.');
+        };        
+    </script>
+</head>

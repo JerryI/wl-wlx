@@ -6,7 +6,7 @@ Begin["`Private`"]
 
 (* evaluation tricks *)
 Set[symbol_, EvaluationHolderObject[obj_]] ^:= (symbol := ReleaseHold[obj])
-SetDelayed[symbol_, EvaluationHolderObject[obj_]] ^:= (symbol[args__] := Block[{Global`Children = List[args]}, ReleaseHold[obj]])
+SetDelayed[symbol_, EvaluationHolderObject[obj_]] ^:= (symbol[arg_, rest___] := Block[{Global`$Children = List[arg, rest], Global`$FirstChild = arg}, ReleaseHold[obj]])
 SetAttributes[EvaluationHolderObject, HoldFirst]
 
 ImportComponent[filename_String] := (

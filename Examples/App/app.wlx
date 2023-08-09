@@ -1,0 +1,75 @@
+RequestID = CreateUUID[];
+
+(* /**************************** Local computations *********************************/ *)
+(* /* scoped variables for each request */ *)
+
+dots = {{0.,0.5}};
+vels = {0.};
+damphing = 0.;
+
+append[xy_] := With[{}, 
+   If[Length[dots] > 100,
+      dots = Append[Drop[dots, 50], xy]; vels = Append[Drop[vels, 50], RandomReal[]/5.0];
+   ,
+      dots = Append[dots, xy]; vels = Append[vels, RandomReal[]/5.0];
+   ];
+];  
+
+(* /* mouse listener */ *)
+listener = {White, EventHandler[Rectangle[{-10, 10}, {10,-10}], {"mousemove"->append}]};
+
+(* /* plot function */ *)
+PlottingDevice = Graphics[{listener, Pink, PointSize[0.05], Point[Offload[dots]]}, Axes->True, Controls->True, TransitionDuration->10];
+
+(* /* kinda many bodies sim in real time */ *)
+manyBodySim := Module[{newState = dots},
+   dots = MapIndexed[With[{i = #2[[1]], y = #1[[2]]},
+      vels[[i]] = (1.0 - damphing / 10.0) vels[[i]] - Sign[y] 0.1;
+      With[{calculated = y + vels[[i]] 0.1},
+         (* /* bounce back if hit the ground */ *)
+         If[Sign[y] (calculated) < 0, 
+            vels[[i]] = - vels[[i]];
+            {#1[[1]], Sign[y] 0.001}
+         ,
+            {#1[[1]], calculated}
+         ]
+      ]
+
+
+   ]&, newState];
+];
+
+(* /* UI components for controls of simulation */ *)
+UI = ImportComponent["components/ui.wlx"];
+
+task = Null;
+
+(* /**************** EVENT HANDLERS ***********************/ *)
+(* /* bind an event from the client to a handler function */ *)
+
+EventHandler[StringJoin[RequestID, "-gravity"], Function[start, 
+   If[start,
+      If[Head[task] === TaskObject, TaskRemove[task]];
+      task = SessionSubmit[ScheduledTask[manyBodySim, Quantity[1/27.0, "Seconds"]]];
+   ,
+      TaskRemove[task];
+      task = Null;
+   ]
+]];
+
+(* /* bind an event from the client to a handler function */ *)
+EventHandler[StringJoin[RequestID, "-damphing"], Function[factor, damphing = factor]];
+
+
+(* /****************************** HTML Layout ***************************************/ *)
+
+<div class="divide-y divide-gray-200 max-w-lg overflow-hidden rounded-lg bg-white shadow">
+  <div class="px-4 py-5 sm:p-6">
+   <WLJS>
+      <PlottingDevice/> 
+   </WLJS>
+  </div>
+  <div class="px-4 py-4 sm:px-6">
+      <UI SID={RequestID}/>
+  </div>
+</div>

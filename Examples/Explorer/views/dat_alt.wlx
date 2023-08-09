@@ -1,4 +1,4 @@
-Data = Drop[Import[First@Children, "TSV"], 3];
+Data = Drop[Import[$FirstChild, "TSV"], 3];
 
 <div>
     <WLJS>

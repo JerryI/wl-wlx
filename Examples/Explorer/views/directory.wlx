@@ -8,6 +8,6 @@ Files = <|
     "Modified" -> (Now - FileDate[#]),
     "Link"     -> FileNameToURLPath[#]
  
-|>& /@ FileNames["*", First@Children]; 
+|>& /@ FileNames["*", $FirstChild]; 
 
 <ContentList Data={Files}/> 

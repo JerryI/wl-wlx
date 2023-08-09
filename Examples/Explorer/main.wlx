@@ -5,7 +5,7 @@ Head       := ImportComponent["components/head.wlx"];
 dir        := ImportComponent["views/directory.wlx"];
 editor     := ImportComponent["views/editor.wlx"];
 image      := ImportComponent["views/image.wlx"];
-dat        := ImportComponent["views/dat.wlx"];
+plot       := ImportComponent["views/plot.wlx"];
 none       := ImportComponent["views/none.wlx"];
 
 Breadcrumbs = ImportComponent["components/breadcrumbs.wlx"];
@@ -22,11 +22,11 @@ AnyQ[path_String]      := FileExistsQ[path]
 
 View[path_?DirectoryQ] := (Print["Directory!"];     dir[path]   ); 
 View[path_?ImageQ]     := (Print["Image!"];         image[path] );
-View[path_?DatQ]       := (Print["Data!"];          dat[path]   );
+View[path_?DatQ]       := (Print["Data!"];          plot[path]  );
 View[path_?AnyQ]       := (Print["Editor!"];        editor[path]);
 View[path_]            := (Print["None!"];          none[path]  );
 
-Path = URLPathToFileName[URLDecode@First[Request]["Path"]];
+Path = URLPathToFileName[URLDecode@(Request["Path"])];
 If[StringLength[Path] === 0, Path = "."];
 
 (* /* HTML Page */ *)
@@ -43,16 +43,13 @@ If[StringLength[Path] === 0, Path = "."];
     </Head>  
     <body> 
         <div class="min-h-full">
-
             <header class="bg-white shadow">
                 <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
                     <h1 class="text-3xl font-bold tracking-tight text-gray-900">File explorer</h1>
-                    <Breadcrumbs FileName={Path}/>
-                </div>
-                
+                    <Breadcrumbs FileName={Path} />
+                </div> 
             </header>
             <main>
-                
                 <div class="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
                     <View>
                         <Path/>

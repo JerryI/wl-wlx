@@ -8,7 +8,9 @@ PacletRepositories[{
   Github -> "https://github.com/KirillBelovTest/Internal",
   Github -> "https://github.com/JerryI/CSocketListener",
   Github -> "https://github.com/KirillBelovTest/TCPServer",
-  Github -> "https://github.com/KirillBelovTest/HTTPHandler"
+  Github -> "https://github.com/KirillBelovTest/HTTPHandler",
+  Github -> "https://github.com/KirillBelovTest/WebSocketHandler",
+  Github -> "https://github.com/JerryI/wl-misc"
 }]
 
 <<KirillBelov`Objects`

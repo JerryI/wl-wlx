@@ -76,18 +76,20 @@ Options[ProcessString] = {
 }
 
 
-(*Trimmer = Function[str, StringReplace[str, {
-  RegularExpression["\\n|\\t"] -> "", 
-  RegularExpression["\\A(\\s+)"] -> " ", 
-  RegularExpression["(\\s+)\\Z"] -> " "
-}]]*)
+(* remove white spaces, but keep the separations <b></b>_word *)
+Trimmer = Function[str, 
+StringReplace[str, {
+  RegularExpression["\\A[\\n|\\t|\\r]*( *)([\\w|:|\\/|.|\\d]?)"] :> If[StringLength["$2"]===0, "", If[StringLength["$1"] > 0, " $2", "$2"]],
+  RegularExpression["([\\w|:|\\/|.|\\d]?)( *)[\\r|\\n| |\\t]*\\Z"] :> If[StringLength["$1"]===0, "", If[StringLength["$2"] > 0, "$1 ", "$1"]]
+}]
+];
 
-Trimmer = StringTrim
+
 
 parseTags[str_String] := {
   StringPosition[str, RegularExpression["\\<(\\w*)(\\s*(((\\w|-)*)=\\\"([^\"]+)\")*((\\w*)=\\{([^\\<\\>]+)\\})*)*\\>"]],
   StringPosition[str, RegularExpression["(\\<\\/[^\\<|\\>|\\/]*\\>)"]],
-  StringPosition[str, RegularExpression["(\\<[^\\<|\\>|\\/]*\\/\\>)"]]
+  StringPosition[str, RegularExpression["(\\<[^\\<|\\>]*\\/\\>)"]]
 }
 
 escape[str_String] := Module[{rules = {}, populate, newstr},
@@ -105,6 +107,9 @@ escapeReplacement[handler_, pattern_] := With[{uid = Unique[]//ToString},
 
 (*** Tokenizer for the WLX subset ***)
 
+(* regexp for the inset of the WL expression *)
+wlinset = "[\\w|@|\\[|\\]|,|\\>|\\<|\\||\\/|\\+|\\$|{|}|\\\"|\\-|\\.|\\s|\\d]*";
+
 tokenizer[s_, r_, str_] := 
  With[{element = 
     (* HTML tag as a full thing *)
@@ -121,27 +126,28 @@ tokenizer[s_, r_, str_] :=
     (* parameters passed as title={Title}, usually constants for the components *)     
     block = 
      StringCases[element, 
-      RegularExpression["(\\w*)=\\{([\\w|@|\\[|\\]|,|{|}|\\\"|\\-|\\.|\\s|\\d]*)\\}"] -> ("$1" -> "$2") ],
+      RegularExpression["(\\w*)=\\{("<>wlinset<>")\\}"] -> ("$1" -> "$2") ],
 
     (* HTML/XML properties passed as class="{Class}", usually constants for styles and etc *)  
     prop = 
      StringCases[element, 
-      RegularExpression["(\\w*)=\"([^\"|=|{|}]*)\\{(\\w*)\\}([^\"|=|{|}]*)\""] -> ("$1" -> {"$2", "$3", "$4"}) ],
+      RegularExpression["(\\w*)=\"([^\"|=|{|}]*)\\{("<>wlinset<>")\\}([^\"|=|{|}]*)\""] -> ("$1" -> {"$2", "$3", "$4"}) ],
 
     (* static properties like style="background-color: red;" *)
     common = 
      StringCases[element, 
       RegularExpression[
-        "([\\w|\\-]*)=\\\"([\\w|\\(|\\)|\\;|\\:|\\s|\\d|\\%|#|\\.|\\-|\\,|\\?|\\/|\\@]*)\\\""] -> ("$1" -> "$2") ]
+        "([\\w|\\-]*)=\\\"([\\w|\\(|\\)|\\;|\\^|\\:|\\s|\\d|\\%|#|\\.|\\-|\\,|\\?|\\/|\\@]*)\\\""] -> ("$1" -> "$2") ]
     },
 
-
-   <|"pos" -> s, "type" -> r, 
-    "atom" -> 
-     If[StringMatchQ[head, RegularExpression["[\\d|\\.]*"]], "Number", If[UpperCaseQ[StringTake[head, 1]], "Expression", "HTML"]], 
-    "head" -> head, "native" -> UpperCaseQ[StringTake[head, 1]], 
-    "block" -> block, "properties" -> prop , 
-    "common" -> common|>
+    With[{firstH = StringTake[head, 1]},
+      <|"pos" -> s, "type" -> r, 
+       "atom" -> 
+        If[StringMatchQ[head, RegularExpression["[\\d|\\.]*"]], "Number", If[(UpperCaseQ[firstH] || firstH === "$"), "Expression", "HTML"]], 
+       "head" -> head, "native" -> (UpperCaseQ[firstH] || firstH === "$"), 
+       "block" -> block, "properties" -> prop , 
+       "common" -> common|>
+    ]
    ]
   ]
 
