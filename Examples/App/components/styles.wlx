@@ -53,4 +53,19 @@
       margin-left: 0px;
       margin-left: 6.5px;
     }
+
+    /** FF*/
+    input[type="range"]::-moz-range-progress {
+      background-color: #2dd4bf; 
+    }
+    input[type="range"]::-moz-range-track {  
+      background-color: #e6e6e6;
+    }
+    /* IE*/
+    input[type="range"]::-ms-fill-lower {
+      background-color: #e6e6e6; 
+    }
+    input[type="range"]::-ms-fill-upper {  
+      background-color: #2dd4bf;
+    }
 </style>
