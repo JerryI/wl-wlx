@@ -9,21 +9,22 @@ Set[symbol_, EvaluationHolderObject[obj_]] ^:= (symbol := ReleaseHold[obj])
 SetDelayed[symbol_, EvaluationHolderObject[obj_]] ^:= (symbol[arg_, rest___] := Block[{Global`$Children = List[arg, rest], Global`$FirstChild = arg}, ReleaseHold[obj]])
 SetAttributes[EvaluationHolderObject, HoldFirst]
 
-ImportComponent[filename_String] := (
+ImportComponent[filename_String, opts___] := (
     (* check the cache first! *)
-    cache[loadData[filename], cinterval]
+    cache[loadData[filename, opts], cinterval]
 )
 
-SetDelayed[symbol_, ImportComponent[args_]] ^:= With[{e = ImportComponent[args]}, SetDelayed[symbol, e]]
+SetDelayed[symbol_, ImportComponent[args_, opts___]] ^:= With[{e = ImportComponent[args, opts]}, SetDelayed[symbol, e]]
 
-loadData[filename_String] := Module[{data},
+loadData[filename_String, opts_: Rule["Localize", True]] := Module[{data},
     (* check the cache first! *)
     data = ReadString[filename // processFileName // FileNameJoin, EndOfFile];
 
-    With[{body = ProcessString[data, "Localize"->True]},
+    With[{body = ProcessString[data, opts]},
         EvaluationHolderObject[body]
     ]
 ]
+
 
 (* filenames corrector *)
 checkIfUNIXStyle[str_String] := Length[StringCases[str, "\\"]] === 0
