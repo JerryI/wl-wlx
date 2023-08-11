@@ -1,0 +1,10 @@
+text     = "nothing";
+View     = TextView[Offload[text]] // WLJS;
+Button   = ButtonView["Press me", "Event"->Secret] // WLJS; 
+
+EventHandler[Secret, Function[void, text = RandomWord[]]];
+
+<div>
+    <View/>
+    <Button/>
+</div>

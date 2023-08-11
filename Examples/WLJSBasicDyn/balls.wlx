@@ -1,0 +1,13 @@
+p     = {0,0};
+Graph = Graphics[{PointSize[0.05], Magenta, Point[p // Offload]}];
+
+task = With[{Secret = Secret},
+    SessionSubmit[ ScheduledTask[
+        If[!WLJSAliveQ[Secret], Print["Task is dead"]; TaskRemove[task], Print["Task is alive"]];
+        p = RandomReal[{-1,1},2];
+    , Quantity[1, "Seconds"]]]
+];
+
+<WLJS>
+	<Graph/>
+</WLJS>
