@@ -43,7 +43,7 @@
       padding-left: 0.7em;
       -moz-appearance: textfield;
       -webkit-appearance: textfield;
-      font-size: 0.975em;
+      font-size: 0.875em;
       font-weight: 250;
       margin-right: 0.5em;
     }

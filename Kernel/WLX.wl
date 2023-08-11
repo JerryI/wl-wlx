@@ -367,8 +367,16 @@ constructWL[Token["Nested", head_, tail_, child_]] :=
 
 (*** Language manipulation tools ***)
 
-convertToModule[vars_, body_] := vars /. _@{v__} :> FakeHold[Module[{v}, CompoundExpression @@ body]]
+convertToModule[vars_, body_] := vars /. _@{v__} :> FakeHold[Module[{v}, CompoundExpression @@ Join[{garbageList[FakeHold[vars]]}, body]]]
 convertToModule[Hold[{}], body_]    := FakeHold[CompoundExpression @@ body]
+
+(*** garbage collection ***)
+
+garbageCollection = {};
+
+garbageList[list_] := (
+  AppendTo[garbageCollection, list];
+)
 
 extractLocalVariables[exprs_List] := Module[{localVariables = {}},
   (* capture all set and setdelayed in the top-level *)
