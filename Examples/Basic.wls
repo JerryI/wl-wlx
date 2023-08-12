@@ -1,6 +1,6 @@
 #!/usr/bin/env wolframscript
 (* ::Package:: *)
-PacletInstall["JerryI/LPM"]
+Once[If[PacletFind["JerryI/LPM"] === {}, PacletInstall["JerryI/LPM"]]]; 
 << JerryI`LPM`
 
 PacletRepositories[{

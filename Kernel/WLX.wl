@@ -52,8 +52,6 @@ ProcessString[pstr_String, OptionsPattern[]] := Module[{str, open, close, singul
 
     
     (* hydrate with WLX the original code again *)
-    Print[pureWLCode];
-    Print[escapedCode];
 
     pureWLCode = pureWLCode /. map /. escapedCode;
     

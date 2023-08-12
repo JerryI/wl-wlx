@@ -3,27 +3,30 @@
 PacletObject[
   <|
     "Name" -> "JerryI/WLX",
-    "Description" -> "Wolfram Script XML",
+    "Description" -> "Wolfram Language XML syntax extension (a superset of WL and XML)",
     "Creator" -> "Kirill Vasin",
-    "License" -> "MIT",
+    "License" -> "GPL3",
     "PublisherID" -> "JerryI",
-    "Version" -> "0.0.1",
+    "Version" -> "1.0.0",
     "WolframVersion" -> "11+",
     "PrimaryContext" -> "JerryI`WLX`",
     "Extensions" -> {
       {
         "Kernel",
         "Root" -> "Kernel",
-        "Context" -> {{"JerryI`WSP`", "WLX.wl"}, {"JerryI`WLX`Importer`", "Importer.wl"}},
+        "Context" -> {
+          {"JerryI`WSP`", "WLX.wl"}, 
+          {"JerryI`WLX`Importer`", "Importer.wl"},
+          {"JerryI`WLX`WLJS`", "WLJS.wl"}
+        },
         "Symbols" -> {}
       },
  
-      {
-        "Asset",
+      { "Asset",
         "Assets" -> {
           {"ReadMe", "./README.md"},
-          {"ExamplesFolder", "./TestData"},
-          {"Example", "./Test.wls"}
+          {"ExamplesFolder", "./Examples"},
+          {"Image", "./logo.png"}
         }
       }
     }

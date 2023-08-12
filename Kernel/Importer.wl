@@ -5,8 +5,8 @@ ImportComponent::usage = "s = ImportComponent[filename_String] imports a compone
 Begin["`Private`"]
 
 (* evaluation tricks *)
-Set[symbol_, EvaluationHolderObject[obj_]] ^:= (symbol := ReleaseHold[obj])
-SetDelayed[symbol_, EvaluationHolderObject[obj_]] ^:= (symbol[arg_, rest___] := Block[{Global`$Children = List[arg, rest], Global`$FirstChild = arg}, ReleaseHold[obj]])
+EvaluationHolderObject /: Set[symbol_, EvaluationHolderObject[obj_]] := (symbol := ReleaseHold[obj])
+EvaluationHolderObject /: SetDelayed[symbol_, EvaluationHolderObject[obj_]] := (symbol[arg_, rest___] := Block[{Global`$Children = List[arg, rest], Global`$FirstChild = arg}, ReleaseHold[obj]])
 SetAttributes[EvaluationHolderObject, HoldFirst]
 
 ImportComponent[filename_String, opts___] := (
@@ -14,7 +14,7 @@ ImportComponent[filename_String, opts___] := (
     cache[loadData[filename, opts], cinterval]
 )
 
-SetDelayed[symbol_, ImportComponent[args_, opts___]] ^:= With[{e = ImportComponent[args, opts]}, SetDelayed[symbol, e]]
+ImportComponent /: SetDelayed[symbol_, ImportComponent[args_, opts___]] := With[{e = ImportComponent[args, opts]}, SetDelayed[symbol, e]]
 
 loadData[filename_String, opts_: Rule["Localize", True]] := Module[{data},
     (* check the cache first! *)
