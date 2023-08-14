@@ -5,8 +5,8 @@ ImportComponent::usage = "s = ImportComponent[filename_String] imports a compone
 Begin["`Private`"]
 
 (* evaluation tricks *)
-EvaluationHolderObject /: Set[symbol_, EvaluationHolderObject[obj_]] := (symbol := ReleaseHold[obj])
-EvaluationHolderObject /: SetDelayed[symbol_, EvaluationHolderObject[obj_]] := (symbol[arg_, rest___] := Block[{Global`$Children = List[arg, rest], Global`$FirstChild = arg}, ReleaseHold[obj]])
+EvaluationHolderObject /: Set[symbol_, EvaluationHolderObject[obj_, assoc_]] := With[{p = assoc["Path"]}, symbol := Block[{$InputFileName = p}, ReleaseHold[obj]]]
+EvaluationHolderObject /: SetDelayed[symbol_, EvaluationHolderObject[obj_, assoc_]] := With[{p = assoc["Path"]}, (symbol[arg_, rest___] := Block[{$InputFileName = p, Global`$Children = List[arg, rest], Global`$FirstChild = arg}, ReleaseHold[obj]])]
 SetAttributes[EvaluationHolderObject, HoldFirst]
 
 ImportComponent[filename_String, opts___] := (
@@ -16,12 +16,12 @@ ImportComponent[filename_String, opts___] := (
 
 ImportComponent /: SetDelayed[symbol_, ImportComponent[args_, opts___]] := With[{e = ImportComponent[args, opts]}, SetDelayed[symbol, e]]
 
-loadData[filename_String, opts_: Rule["Localize", True]] := Module[{data},
+loadData[filename_String, opts_: Rule["Localize", True]] := Module[{data, path = filename // processFileName // FileNameJoin},
     (* check the cache first! *)
-    data = ReadString[filename // processFileName // FileNameJoin, EndOfFile];
+    data = ReadString[path, EndOfFile];
 
     With[{body = ProcessString[data, opts]},
-        EvaluationHolderObject[body]
+        EvaluationHolderObject[body, <|"Path"->path|>]
     ]
 ]
 
