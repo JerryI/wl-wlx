@@ -19,8 +19,8 @@ ProcessString[pstr_String, OptionsPattern[]] := Module[{str, open, close, singul
         tokenizer[#, -1, str] & /@ close], #["pos"][[1]] &];
 
 
-    fetchInnerText[tokens, str];
-    tokens = Join[tokens, fetchInnerText[tokens, str]];
+    fetchInnerText[tokens, str, OptionValue["Trimmer"]];
+    tokens = Join[tokens, fetchInnerText[tokens, str, OptionValue["Trimmer"]]];
     tokens = SortBy[tokens, #["pos"][[1]] &];
 
     
@@ -70,7 +70,9 @@ ProcessString[pstr_String, OptionsPattern[]] := Module[{str, open, close, singul
 ]
 
 Options[ProcessString] = {
-  "Localize" -> False
+  "Localize" -> False,
+  "Trimmer" -> Trimmer,
+  "Rules" -> {}
 }
 
 
@@ -153,7 +155,7 @@ tokenizer[s_, r_, str_] :=
    it can be <div>Hi!</div> -> Hi!
  *)
 
-fetchInnerText = Function[{t, str}, 
+fetchInnerText = Function[{t, str, trimmer}, 
    Select[
     Module[{bra = 0},
       Table[
@@ -165,7 +167,7 @@ fetchInnerText = Function[{t, str},
          <|"pos" -> {l + 1, r - 1}, "atom" -> "Text", "block" -> {}, 
           "head" -> "WText", "type" -> 0, "native" -> True, 
           "content" -> (StringTake[StringDrop[str, l], r - l - 1] // 
-             Trimmer)|>
+             trimmer)|>
          ]
         ]
        , {i, Length[t] - 1}]] // DeleteMissing, 
