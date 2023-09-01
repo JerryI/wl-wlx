@@ -14,7 +14,7 @@ PacletObject[
         "Kernel",
         "Root" -> "Kernel",
         "Context" -> {
-          {"JerryI`WSP`", "WLX.wl"},
+          {"JerryI`WLX`", "WLX.wl"},
           {"JerryI`WLX`Importer`", "Importer.wl"},
           {"JerryI`WLX`WLJS`", "WLJS.wl"}
         },
