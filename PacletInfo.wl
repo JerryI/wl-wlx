@@ -7,7 +7,7 @@ PacletObject[
     "Creator" -> "Kirill Vasin",
     "License" -> "GPL-3.0-only",
     "PublisherID" -> "JerryI",
-    "Version" -> "1.0.2",
+    "Version" -> "1.0.4",
     "WolframVersion" -> "11+",
     "Extensions" -> {
       {

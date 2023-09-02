@@ -13,6 +13,8 @@ PacletRepositories[{
   Github -> "https://github.com/JerryI/wl-misc"
 }]
 
+RandomWord[];
+
 (* Here you can configure *)
 ENV = <|
     "WSPort"->8011,

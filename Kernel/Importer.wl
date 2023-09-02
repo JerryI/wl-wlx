@@ -7,8 +7,8 @@ Begin["`Private`"]
 PackageExists = True
 
 (* evaluation tricks *)
-EvaluationHolderObject /: Set[symbol_, EvaluationHolderObject[obj_, assoc_]] := With[{p = assoc["Path"]}, symbol := Block[{$InputFileName = p}, ReleaseHold[obj]]]
-EvaluationHolderObject /: SetDelayed[symbol_, EvaluationHolderObject[obj_, assoc_]] := With[{p = assoc["Path"]}, (symbol[arg_, rest___] := Block[{$InputFileName = p, Global`$Children = List[arg, rest], Global`$FirstChild = arg}, ReleaseHold[obj]])]
+EvaluationHolderObject /: Set[symbol_, EvaluationHolderObject[obj_, assoc_]] := With[{p = assoc["Path"]}, symbol := Block[{}, ReleaseHold[obj]]]
+EvaluationHolderObject /: SetDelayed[symbol_, EvaluationHolderObject[obj_, assoc_]] := With[{p = assoc["Path"]}, (symbol[arg_, rest___] := Block[{Global`$Children = List[arg, rest], Global`$FirstChild = arg}, ReleaseHold[obj]])]
 SetAttributes[EvaluationHolderObject, HoldFirst]
 
 ImportComponent[filename_String, opts___] := (

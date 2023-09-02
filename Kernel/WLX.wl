@@ -5,7 +5,10 @@ ToStringRiffle::usage = "ToString, but turns arrays into a string as well"
 
 Begin["`Private`"]
 
-ProcessString[pstr_String, OptionsPattern[]] := Module[{str, open, close, singular, tokens, tree, placeholders, escapedCode, pureWLCode, map},
+ProcessString[pstr_String, OptionsPattern[]] := Module[{str, open, close, singular, commentsList, tokens, tree, placeholders, escapedCode, pureWLCode, map},
+    (* escape HTML comments *)
+    {pstr, commentsList} = escapeComments[pstr];
+    
     (* escape the area marked by user *)
     {str, escapedCode} = escape[pstr];
 
@@ -19,8 +22,8 @@ ProcessString[pstr_String, OptionsPattern[]] := Module[{str, open, close, singul
         tokenizer[#, -1, str] & /@ close], #["pos"][[1]] &];
 
 
-    fetchInnerText[tokens, str, OptionValue["Trimmer"]];
-    tokens = Join[tokens, fetchInnerText[tokens, str, OptionValue["Trimmer"]]];
+    fetchInnerText[tokens, str, OptionValue["Trimmer"], commentsList];
+    tokens = Join[tokens, fetchInnerText[tokens, str, OptionValue["Trimmer"], commentsList]];
     tokens = SortBy[tokens, #["pos"][[1]] &];
 
     
@@ -84,7 +87,13 @@ StringReplace[str, {
 }]
 ];
 
-
+escapeComments[str_String] := Module[{map = {}, new},
+  new = StringReplace[str, RegularExpression["\\<\\!\\-\\-([^\\!|\\<|\\>]*)\\>"] :> With[{uid = CreateUUID[], body = "$1"},
+    AppendTo[map, ("WLXCMNT["<>uid<>"]") -> ("<!--"<>body<>">")];
+    ("WLXCMNT["<>uid<>"]")
+  ]];
+  {new, map}
+]
 
 parseTags[str_String] := {
   StringPosition[str, RegularExpression["\\<(\\w*)(\\s*(((\\w|-)*)=\\\"([^\"]+)\")*((\\w*)=\\{([^\\<\\>]+)\\})*)*\\>"]],
@@ -155,7 +164,7 @@ tokenizer[s_, r_, str_] :=
    it can be <div>Hi!</div> -> Hi!
  *)
 
-fetchInnerText = Function[{t, str, trimmer}, 
+fetchInnerText = Function[{t, str, trimmer, htmlcomments}, 
    Select[
     Module[{bra = 0},
       Table[
@@ -166,8 +175,8 @@ fetchInnerText = Function[{t, str, trimmer},
          
          <|"pos" -> {l + 1, r - 1}, "atom" -> "Text", "block" -> {}, 
           "head" -> "WText", "type" -> 0, "native" -> True, 
-          "content" -> (StringTake[StringDrop[str, l], r - l - 1] // 
-             trimmer)|>
+          "content" -> StringReplace[(StringTake[StringDrop[str, l], r - l - 1] // 
+             trimmer), htmlcomments]|>
          ]
         ]
        , {i, Length[t] - 1}]] // DeleteMissing, 

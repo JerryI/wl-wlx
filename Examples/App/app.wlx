@@ -19,7 +19,7 @@ append[xy_] := With[{},
 listener = {White, EventHandler[Rectangle[{-10, 10}, {10,-10}], {"mousemove"->append}]};
 
 (* /* plot function */ *)
-PlottingDevice = Graphics[{listener, RGBColor[0.1764, 0.8313, 0.74901], PointSize[0.05], Point[Offload[dots]]}, Axes->True, Controls->True, TransitionDuration->50];
+PlottingDevice = Graphics[{listener, RGBColor[0.1764, 0.8313, 0.74901], PointSize[0.05], Point[Offload[dots]]}, Controls->True, TransitionDuration->50];
 
 (* /* kinda many bodies sim in real time */ *)
 manyBodySim := Module[{newState = dots},
@@ -64,6 +64,7 @@ EventHandler[StringJoin[RequestID, "-damphing"], Function[factor, damphing = fac
 (* /****************************** HTML Layout ***************************************/ *)
 
 <div class="divide-y divide-gray-200 max-w-lg overflow-hidden rounded-lg bg-white shadow">
+   <!-- Hello from comment -->
   <div class="px-4 py-5 sm:p-6">
    <WLJS>
       <PlottingDevice/> 
