@@ -5,12 +5,12 @@ ToStringRiffle::usage = "ToString, but turns arrays into a string as well"
 
 Begin["`Private`"]
 
-ProcessString[pstr_String, OptionsPattern[]] := Module[{str, open, close, singular, commentsList, tokens, tree, placeholders, escapedCode, pureWLCode, map},
+ProcessString[pstr_String, OptionsPattern[]] := Module[{str, open, close, singular, commentsList = {}, tokens, tree, placeholders, escapedCode, pureWLCode, map},
     (* escape HTML comments *)
-    {pstr, commentsList} = escapeComments[pstr];
+    {str, commentsList} = escapeComments[pstr];
     
     (* escape the area marked by user *)
-    {str, escapedCode} = escape[pstr];
+    {str, escapedCode} = escape[str];
 
     
     (* three types of HTML tags *)
