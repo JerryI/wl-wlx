@@ -72,6 +72,8 @@ ProcessString[pstr_String, OptionsPattern[]] := Module[{str, open, close, singul
     convertToModule[extractLocalVariables[pureWLCode], pureWLCode] /. {Hold -> Identity} /. {FakeHold -> Hold}  
 ]
 
+IdentityTransform[a_] := a
+
 Options[ProcessString] = {
   "Localize" -> False,
   "Trimmer" -> Trimmer,
@@ -315,9 +317,9 @@ constructWL["Singular", "Number", token_] := ToExpression[token["head"]]
 
 (* atoms *)
 (* any WL expressions returns WL expression *)
-constructWL["Singular", "Expression", token_] := ToExpression[token["head"], InputForm, FakeHold]
-constructWL["Normal", "Expression", token_] := ToExpression[token["head"], InputForm, FakeHold][]
-constructWL["Nested", "Expression", token_, args_] := ToExpression[token["head"], InputForm, FakeHold] @@ args
+constructWL["Singular", "Expression", token_] := With[{il=ToExpression[token["head"], InputForm, FakeHold]}, FakeHold[IdentityTransform[il]]]
+constructWL["Normal", "Expression", token_] := With[{il=ToExpression[token["head"], InputForm, FakeHold]}, FakeHold[IdentityTransform[il[]]]]
+constructWL["Nested", "Expression", token_, args_] := With[{il=ToExpression[token["head"], InputForm, FakeHold]}, FakeHold[IdentityTransform[il @@ args]]] 
 
 (* any HTML tags results in strings *)
 constructWL["Normal", "HTML", token_] := With[{
