@@ -7,9 +7,9 @@ PacletRepositories[{
   Github -> "https://github.com/KirillBelovTest/Objects",
   Github -> "https://github.com/KirillBelovTest/Internal",
   Github -> "https://github.com/JerryI/CSocketListener",
-  Github -> "https://github.com/JerryI/TCPServer",
-  Github -> "https://github.com/JerryI/HTTPHandler",
-  Github -> "https://github.com/JerryI/WebSocketHandler",
+  Github -> "https://github.com/KirillBelovTest/TCPServer",
+  Github -> "https://github.com/KirillBelovTest/HTTPHandler",
+  Github -> "https://github.com/KirillBelovTest/WebSocketHandler",
   Github -> "https://github.com/JerryI/wl-misc"
 }]
 
@@ -24,7 +24,7 @@ ENV["WAddr"] := StringTemplate["``:``"][ENV["Host"], ENV["WSPort"]]
 
 <<KirillBelov`Objects`
 <<KirillBelov`Internal`
-<<KirillBelov`CSocketListener`
+<<KirillBelov`CSockets`
 <<KirillBelov`TCPServer`
 
 <<KirillBelov`HTTPHandler`
@@ -57,7 +57,7 @@ http["MessageHandler", "File"] = FileRequestQ -> ImportFile
 http["MessageHandler", "Index"] = AssocMatchQ[<|"Method" -> "GET"|>] -> Function[x, index[x]]
 
 (* ::End::*)
-httplistener =  Check[CSocketListen[ENV["HAddr"], tcp@# &], Print["Fallback to ZMQ sockets... Might be unstable"]; SocketListen[ENV["HAddr"], tcp@# &]];
+httplistener =  SocketListen[CSocketOpen[ENV["HAddr"]], tcp@# &]
 
 
 Print["Staring WS/HTTP server..."];
@@ -80,7 +80,7 @@ WLJSTransportHandler["GetSymbol"] = Function[{expr, client, callback},
     callback[expr // ReleaseHold];
 ]
 
-Check[CSocketListen[ENV["WAddr"], wcp@#&], Print["Fallback to ZMQ sockets... Might be unstable"]; SocketListen[ENV["WAddr"], wcp@#&]];
+SocketListen[CSocketOpen[ENV["WAddr"]], wcp@#&];
 
 SetAttributes[Offload, HoldFirst];
 
