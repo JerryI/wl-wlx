@@ -1,6 +1,11 @@
 text     = "nothing";
 View     = TextView[Offload[text]] // WLJS;
+Secret = $Options["Secret"];
 Button   = ButtonView["Press me", "Event"->Secret] // WLJS; 
+
+
+
+Print[Button];
 
 EventHandler[Secret, Function[void, text = RandomWord[]]];
 

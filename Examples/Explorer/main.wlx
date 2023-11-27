@@ -2,7 +2,7 @@
 
 Head       := ImportComponent["components/head.wlx"];
 
-Logo        = ImportComponent["components/logo.wlx"];
+Logo       := ImportComponent["components/logo.wlx"];
  
 dir        := ImportComponent["views/directory.wlx"];
 editor     := ImportComponent["views/editor.wlx"];
@@ -10,7 +10,7 @@ image      := ImportComponent["views/image.wlx"];
 plot       := ImportComponent["views/plot.wlx"];
 none       := ImportComponent["views/none.wlx"];
 
-Breadcrumbs = ImportComponent["components/breadcrumbs.wlx"];
+Breadcrumbs := ImportComponent["components/breadcrumbs.wlx"];
 
 (* /* view router */ *)
 
@@ -28,7 +28,7 @@ View[path_?DatQ]       := (Print["Data!"];          plot[path]  );
 View[path_?AnyQ]       := (Print["Editor!"];        editor[path]);
 View[path_]            := (Print["None!"];          none[path]  );
 
-Path = URLPathToFileName[URLDecode@(Request["Path"])];
+Path = URLPathToFileName[URLDecode@($Options["Request"]["Path"])];
 If[StringLength[Path] === 0, Path = "."];
 
 (* /* HTML Page */ *)

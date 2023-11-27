@@ -4,7 +4,7 @@
     @FileName - a path to a file or directory
 */ *)
 
-splitted = FileNameSplit[FileName];
+splitted = FileNameSplit[$Options["FileName"]];
 
 PathList = Table[
     With[{P = splitted[[i]], URL = FileNameJoin[splitted[[;; i]]] // FileNameToURLPath

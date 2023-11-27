@@ -38,7 +38,7 @@ index := ImportComponent["index.wlx"];
 
 http = HTTPHandler[];
 
-http["MessageHandler", "Index"] = AssocMatchQ[<|"Method" -> "GET"|>] -> Function[x, index[x]]
+http["MessageHandler", "Index"] = AssocMatchQ[<|"Method" -> "GET"|>] -> Function[x,  index[x]]
 
 (* ::End::*)
 SocketListen[CSocketOpen["127.0.0.1:8010"], tcp@# &];

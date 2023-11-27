@@ -10,7 +10,7 @@ P = Plot[x, {x, 0, 1}];
         <WLJSHeader>
             https://cdn.statically.io/gh/JerryI/wljs-interpreter/main/src/interpreter.js
             https://cdn.statically.io/gh/JerryI/wljs-interpreter/main/src/core.js
-            https://cdn.statically.io/gh/JerryI/wljs-graphics-d3/main/dist/kernel.js
+            https://cdn.jsdelivr.net/gh/JerryI/wljs-graphics-d3/dist/kernel.min.js
             https://cdn.statically.io/gh/JerryI/wljs-plotly/main/dist/kernel.js
             https://cdn.statically.io/gh/JerryI/wljs-inputs/main/dist/kernel.js
             https://cdn.statically.io/gh/JerryI/Mathematica-ThreeJS-graphics-engine/master/dist/kernel.js

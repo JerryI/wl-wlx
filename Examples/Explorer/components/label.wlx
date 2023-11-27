@@ -4,7 +4,7 @@
     @T - any kind of data
 */ *)
 
-Str = If[!MissingQ[T], T, ""];
+Str = If[!MissingQ[$Options["T"]], $Options["T"], ""];
 
 <span>
     <TextString>

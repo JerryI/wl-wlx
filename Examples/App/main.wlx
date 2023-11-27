@@ -1,7 +1,7 @@
 (* /* importing dynamic components */ *)
 
 Head       := ImportComponent["components/head.wlx"];
-Logo        = ImportComponent["components/logo.wlx"];
+Logo       := ImportComponent["components/logo.wlx"];
 App         = ImportComponent["app.wlx"];
 
 (* /* HTML Page */ *)

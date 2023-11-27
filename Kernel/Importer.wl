@@ -8,7 +8,13 @@ PackageExists = True
 
 (* evaluation tricks *)
 EvaluationHolderObject /: Set[symbol_, EvaluationHolderObject[obj_, assoc_]] := With[{p = assoc["Path"]}, symbol := Block[{}, ReleaseHold[obj]]]
-EvaluationHolderObject /: SetDelayed[symbol_, EvaluationHolderObject[obj_, assoc_]] := With[{p = assoc["Path"]}, (symbol[arg_, rest___] := Block[{Global`$Children = List[arg, rest], Global`$FirstChild = arg}, ReleaseHold[obj]])]
+EvaluationHolderObject /: SetDelayed[symbol_, EvaluationHolderObject[obj_, assoc_]] := With[{p = assoc["Path"]}, (
+    symbol[rules_Rule] := Block[{Global`$Children = {}, Global`$FirstChild = Null, Global`$Options = Association[rules // List]}, ReleaseHold[obj]];
+    symbol[rules__Rule] := Block[{Global`$Children = {}, Global`$FirstChild = Null, Global`$Options = Association[rules // List]}, ReleaseHold[obj]];
+    symbol[arg_] := Block[{Global`$Children = {arg}, Global`$FirstChild = arg, Global`$Options = Association[{}]}, ReleaseHold[obj]];
+    symbol[arg_, rules__Rule] := Block[{Global`$Children = {arg}, Global`$FirstChild = arg, Global`$Options = Association[rules // List]}, ReleaseHold[obj]];
+    symbol[arg_, rest___, rules___Rule] := Block[{Global`$Children = List[arg, rest], Global`$FirstChild = arg, Global`$Options = Association[rules // List]}, ReleaseHold[obj]];
+)]
 SetAttributes[EvaluationHolderObject, HoldFirst]
 
 ImportComponent[filename_String, opts___] := (

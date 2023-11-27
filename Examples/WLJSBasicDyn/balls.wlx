@@ -1,5 +1,7 @@
 p     = {0,0};
-Graph = Graphics[{PointSize[0.05], Magenta, Point[p // Offload]}];
+Graph = Graphics[{PointSize[0.05], Magenta, Point[p // Offload]}, PlotRange->{{-1,1}, {-1,1}}];
+
+Secret = $Options["Secret"];
 
 task = With[{Secret = Secret},
     SessionSubmit[ ScheduledTask[

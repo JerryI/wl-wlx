@@ -9,5 +9,5 @@
         core.Offload = core.Hold;      
     </script>
 
-    <WLJSTransportScript Regime={"Standalone"} Port={ENV["WSPort"]}></WLJSTransportScript>
+    <WLJSTransportScript Regime={"Standalone"} Port={ENV["WSPort"]}/>
 </head>

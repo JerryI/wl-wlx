@@ -16,10 +16,10 @@ append[xy_] := With[{},
 ];  
 
 (* /* mouse listener */ *)
-listener = {White, EventHandler[Rectangle[{-10, 10}, {10,-10}], {"mousemove"->append}]};
+listener = {White, EventHandler[Rectangle[{-10, -10}, {10,10}], {"mousemove"->append}]};
 
 (* /* plot function */ *)
-PlottingDevice = Graphics[{listener, RGBColor[0.1764, 0.8313, 0.74901], PointSize[0.05], Point[Offload[dots]]}, Controls->True, TransitionDuration->50];
+PlottingDevice = Graphics[{listener, RGBColor[0.1764, 0.8313, 0.74901], PointSize[0.05], Point[Offload[dots]]}, Controls->True, TransitionDuration->50, PlotRange->{{-1,1}, {-1,1}}];
 
 (* /* kinda many bodies sim in real time */ *)
 manyBodySim := Module[{newState = dots},
@@ -40,7 +40,7 @@ manyBodySim := Module[{newState = dots},
 ];
 
 (* /* UI components for controls of simulation */ *)
-UI = ImportComponent["components/ui.wlx"];
+UI := ImportComponent["components/ui.wlx"];
 
 task = Null;
 

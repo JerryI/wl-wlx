@@ -1,5 +1,5 @@
-Text     = ImportComponent["text.wlx"];
-Balls     = ImportComponent["balls.wlx"];
+Text     := ImportComponent["text.wlx"];
+Balls    := ImportComponent["balls.wlx"];
 
 AppStyle = "mx-4 py-3 px-3 col rounded-lg bg-white shadow";
 
@@ -19,7 +19,7 @@ Session = CreateUUID[];
 			https://cdn.statically.io/gh/JerryI/wljs-inputs/main/dist/kernel.js
 			https://cdn.statically.io/gh/JerryI/Mathematica-ThreeJS-graphics-engine/master/dist/kernel.js
 		</WLJSHeader>
-		<WLJSTransportScript Regime={"Standalone"} Port={ENV["WSPort"]} Secret={Session}></WLJSTransportScript>
+		<WLJSTransportScript Regime={"Standalone"} Port={ENV["WSPort"]} Secret={Session}/>
     </head>  
     <body> 
         <div class="min-h-full">

@@ -4,7 +4,7 @@
     @Data - a list of files
 */ *)
 
-Label = ImportComponent["components/label.wlx"];
+Label := ImportComponent["components/label.wlx"];
 (* /* This is ok to import components everytime, since it is cached and there is no need in parsing */ *)
 
 Elements = Table[
@@ -32,7 +32,7 @@ Elements = Table[
           </a>
         </li>
     ]
-, {i, Data}];
+, {i, $Options["Data"]}];
 
 <ul role="list" class="divide-y divide-gray-100">
     <Elements/>

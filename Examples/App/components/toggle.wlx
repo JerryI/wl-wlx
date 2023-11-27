@@ -1,3 +1,6 @@
+Label = $Options["Label"];
+UID = $Options["UID"];
+
 <div class="flex items-center" id="{UID}">
     <style>
         .bg-wlx-500 {

@@ -16,8 +16,9 @@ WLJSHeader[list_String] := With[{},
     (StringRiffle[StringTemplate["<script type=\"module\" src=\"``\"></script>"]/@StringTrim/@StringSplit[list, "\n"], "\n"])<>"<script type=\"module\">core.Offload = core.Hold;</script>"
 ]
 
-WLJS[expr__] := With[{uid = CreateUUID[], class = If[StringQ[Global`Class], Global`Class, ""]},
-    If[TrueQ[Global`NoVirtual],
+
+WLJS[expr__, OptionsPattern[]] := With[{uid = CreateUUID[], class = OptionValue["Class"]},
+    If[TrueQ[OptionValue["NoVirtual"]],
         With[{body = CompoundExpression[expr]},
             StringTemplate["<div class=\"wljs-object ``\" id=\"``\"></div><script type=\"module\">const global = {}; await interpretate(``, {local:{}, global: global})</script>"][class, uid, ExportString[body, "ExpressionJSON", "Compact"->0]]
         ]
@@ -31,6 +32,24 @@ WLJS[expr__] := With[{uid = CreateUUID[], class = If[StringQ[Global`Class], Glob
     ]
 
 ]
+
+WLJS[expr_, OptionsPattern[]] := With[{uid = CreateUUID[], class = OptionValue["Class"]},
+    If[TrueQ[OptionValue["NoVirtual"]],
+        With[{body = expr},
+            StringTemplate["<div class=\"wljs-object ``\" id=\"``\"></div><script type=\"module\">const global = {}; await interpretate(``, {local:{}, global: global})</script>"][class, uid, ExportString[body, "ExpressionJSON", "Compact"->0]]
+        ]
+    ,
+        With[{body = Global`FrontEndVirtual[{
+            Global`AttachDOM[uid],
+            expr
+        }]},
+            StringTemplate["<div class=\"wljs-object ``\" id=\"``\"></div><script type=\"module\">const global = {}; await interpretate(``, {local:{}, global: global})</script>"][class, uid, ExportString[body, "ExpressionJSON", "Compact"->0]]
+        ]
+    ]
+
+]
+
+Options[WLJS] = {"Class"->"", "NoVirtual"->False}
 
 End[]
 

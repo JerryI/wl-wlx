@@ -1,3 +1,5 @@
+Width = $Options["Width"];
+
 <svg viewBox="0 0 156.2 122.8" style="width: {Width}">
       <style type="text/css">
           .st0 {

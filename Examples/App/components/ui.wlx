@@ -1,5 +1,7 @@
 (* /* custom built component */ *)
-ToggleView = ImportComponent["components/toggle.wlx"];
+ToggleView := ImportComponent["components/toggle.wlx"];
+
+SID  = $Options["SID"];
 
 (* /* a regular component from wljs-inputs lib. */ *)
 SliderView = RangeView[{0, 1, 0.1, 0}, "Event"->StringJoin[SID, "-damphing"], "Label"->"Damphing factor"];

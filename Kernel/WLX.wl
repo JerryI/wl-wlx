@@ -305,8 +305,7 @@ ToStringRiffle[expr_List] := StringRiffle[ToString /@ expr, "\n"];
 (* singular token -> singular WL *)
 constructWL[Token["Singular", head_]] := Module[{},
    If[Length@head["block"] > 0,
-    makeBlock[head["block"], 
-     constructWL["Singular", head["atom"], head]]
+     constructWL["Singular", head["block"] // blockToExpression, head["atom"], head]
     ,
     constructWL["Singular", head["atom"], head]
     ]
@@ -320,6 +319,13 @@ constructWL["Singular", "Number", token_] := ToExpression[token["head"]]
 constructWL["Singular", "Expression", token_] := With[{il=ToExpression[token["head"], InputForm, FakeHold]}, FakeHold[IdentityTransform[il]]]
 constructWL["Normal", "Expression", token_] := With[{il=ToExpression[token["head"], InputForm, FakeHold]}, FakeHold[IdentityTransform[il[]]]]
 constructWL["Nested", "Expression", token_, args_] := With[{il=ToExpression[token["head"], InputForm, FakeHold]}, FakeHold[IdentityTransform[il @@ args]]] 
+
+(* if options are provided *)
+constructWL["Singular", opts_List, "Expression", token_] := With[{il=ToExpression[token["head"], InputForm, FakeHold]}, FakeHold[IdentityTransform[il@@opts]]]
+constructWL["Normal", opts_List, "Expression", token_] := With[{il=ToExpression[token["head"], InputForm, FakeHold]}, FakeHold[IdentityTransform[il@@opts]]]
+constructWL["Nested", opts_List, "Expression", token_, args_] := With[{il=ToExpression[token["head"], InputForm, FakeHold]}, FakeHold[IdentityTransform[il @@ Join[args, opts]]]] 
+
+
 
 (* any HTML tags results in strings *)
 constructWL["Normal", "HTML", token_] := With[{
@@ -352,7 +358,7 @@ constructWL["Nested", "HTML", token_, args_] := With[{
 
 constructWL[Token["Normal", head_, tail_]] := 
    If[Length@(head["block"]) > 0,
-    makeBlock[head["block"], constructWL["Normal", head["atom"], head]]
+    constructWL["Normal", head["block"] // blockToExpression, head["atom"], head]
     ,
     constructWL["Normal", head["atom"], head]
 ];
@@ -361,8 +367,7 @@ constructWL[Token["Normal", head_, tail_]] :=
 constructWL[Token["Nested", head_, tail_, TokenGroup[childred_]]] := 
   Module[{},
    If[Length@head["block"] > 0,
-    makeBlock[head["block"], 
-     constructWL["Nested", head["atom"], head, (constructWL /@ childred)]]
+     constructWL["Nested", head["block"] // blockToExpression, head["atom"], head, (constructWL /@ childred)]
     ,
      constructWL["Nested", head["atom"], head, (constructWL /@ childred)]
     ]
@@ -370,8 +375,7 @@ constructWL[Token["Nested", head_, tail_, TokenGroup[childred_]]] :=
 
 constructWL[Token["Nested", head_, tail_, child_]] := 
    If[Length@head["block"] > 0,
-    makeBlock[head["block"], 
-     constructWL["Nested", head["atom"], head, (constructWL /@ {child})]]
+     constructWL["Nested", head["block"] // blockToExpression, head["atom"], head, (constructWL /@ {child})]
     ,
      constructWL["Nested", head["atom"], head, (constructWL /@ {child})]
 ];
@@ -438,6 +442,10 @@ SplitExpression[astr_] :=
 SetAttributes[FakeSet, HoldAll]
 SetAttributes[FakeHold, HoldAll]
 SetAttributes[FakeBlock, HoldAll]
+
+blockToExpression[input_List] := With[{},
+  (#[[1]] -> ToExpression[#[[2]], InputForm, FakeHold]) &/@ input
+]
 
 makeBlock[vars_List, inner_] :=
  (With[{c = vars /. {
