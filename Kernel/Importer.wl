@@ -2,29 +2,49 @@ BeginPackage["JerryI`WLX`Importer`", {"JerryI`WLX`"}]
 
 ImportComponent::usage = "s = ImportComponent[filename_String] imports a component into a given symbol"
 
+Placebo::usage = "Identity, but for strings"
+
 Begin["`Private`"]
 
 PackageExists = True
 
+Placebo[str__] := StringJoin @@ (ToString /@ List[str])
+Placebo[str_] := ToString[str]
+
 (* evaluation tricks *)
-EvaluationHolderObject /: Set[symbol_, EvaluationHolderObject[obj_, assoc_]] := With[{p = assoc["Path"]}, symbol := Block[{}, ReleaseHold[obj]]]
 EvaluationHolderObject /: SetDelayed[symbol_, EvaluationHolderObject[obj_, assoc_]] := With[{p = assoc["Path"]}, (
-    symbol[rules_Rule] := Block[{Global`$Children = {}, Global`$FirstChild = Null, Global`$Options = Association[rules // List]}, ReleaseHold[obj]];
-    symbol[rules__Rule] := Block[{Global`$Children = {}, Global`$FirstChild = Null, Global`$Options = Association[rules // List]}, ReleaseHold[obj]];
-    symbol[arg_] := Block[{Global`$Children = {arg}, Global`$FirstChild = arg, Global`$Options = Association[{}]}, ReleaseHold[obj]];
-    symbol[arg_, rules__Rule] := Block[{Global`$Children = {arg}, Global`$FirstChild = arg, Global`$Options = Association[rules // List]}, ReleaseHold[obj]];
-    symbol[arg_, rest___, rules___Rule] := Block[{Global`$Children = List[arg, rest], Global`$FirstChild = arg, Global`$Options = Association[rules // List]}, ReleaseHold[obj]];
+    symbol[rules_Rule] := Block[{Global`$WLXInputPath = DirectoryName[p], Global`$Children = {}, Global`$FirstChild = Null, Global`$Options = Association[rules // List]}, ReleaseHold[obj]];
+    symbol[rules__Rule] := Block[{Global`$WLXInputPath = DirectoryName[p], Global`$Children = {}, Global`$FirstChild = Null, Global`$Options = Association[rules // List]}, ReleaseHold[obj]];
+    symbol[arg_] := Block[{Global`$WLXInputPath = DirectoryName[p], Global`$Children = {arg}, Global`$FirstChild = arg, Global`$Options = Association[{}]}, ReleaseHold[obj]];
+    symbol[arg_, rules__Rule] := Block[{Global`$WLXInputPath = DirectoryName[p], Global`$Children = {arg}, Global`$FirstChild = arg, Global`$Options = Association[rules // List]}, ReleaseHold[obj]];
+    symbol[arg_, rest___, rules___Rule] := Block[{Global`$WLXInputPath = DirectoryName[p], Global`$Children = List[arg, rest], Global`$FirstChild = arg, Global`$Options = Association[rules // List]}, ReleaseHold[obj]];
 )]
 SetAttributes[EvaluationHolderObject, HoldFirst]
 
-ImportComponent[filename_String, opts___] := (
+importComponent[filename_String, opts___] := (
     (* check the cache first! *)
     cache[loadData[filename, opts], cinterval]
 )
 
-ImportComponent /: SetDelayed[symbol_, ImportComponent[args_, opts___]] := With[{e = ImportComponent[args, opts]}, SetDelayed[symbol, e]]
+ImportComponent[filename_String, opts___] := (
+    (* check the cache first! *)
+    With[{object = cache[loadData[filename, opts], cinterval]},
+        With[{p = object[[2]]["Path"], body = object[[1]]}, 
+            Block[{Global`$WLXInputPath = DirectoryName[p]}, 
+                ReleaseHold[body] 
+            ] 
+        ]
+    ]
+)
 
-loadData[filename_String, opts_: Rule["Localize", True]] := Module[{data, path = filename // processFileName // FileNameJoin},
+ImportComponent /: SetDelayed[symbol_, ImportComponent[args_, opts___]] := With[{e = importComponent[args, opts]}, SetDelayed[symbol, e]]
+
+loadData[filename_String, opts_: Rule["Localize", True]] := Module[{data, path},
+    (* search by relative first *)
+    path = {Global`$WLXInputPath, filename // processFileName} // Flatten // FileNameJoin;
+    If[!TrueQ[FileExistsQ[path]],
+        path = filename // processFileName // FileNameJoin;
+    ];
     (* check the cache first! *)
     data = ReadString[path, EndOfFile];
 

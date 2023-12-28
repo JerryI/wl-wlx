@@ -36,7 +36,7 @@ ProcessString[pstr_String, OptionsPattern[]] := Module[{str, open, close, singul
 
 
     (* generate sanitized list of expressions *)
-    pureWLCode = ToExpression[#, InputForm, Hold] & /@ SplitExpression[
+    pureWLCode = ToExpression[#, InputForm, Hold2] & /@ SplitExpression[
         With[{rules = Values[placeholders]},
             StringReplacePart[str, rules[[All, 1]], rules[[All, 2]]]
         ]
@@ -44,7 +44,7 @@ ProcessString[pstr_String, OptionsPattern[]] := Module[{str, open, close, singul
 
     (* construct WL expression from WLX *)
     map = (ToExpression[#[[2, 1]]] -> constructWL[#[[1]]]) & /@ placeholders;
-    map = With[{expr = #[[2]]}, #[[1]]->Hold[expr]] & /@ map;
+    map = With[{expr = #[[2]]}, #[[1]]->Hold2[expr]] & /@ map;
 
     (* restore dangerous functions *)
     
@@ -63,13 +63,13 @@ ProcessString[pstr_String, OptionsPattern[]] := Module[{str, open, close, singul
     (* return the results if no localization is specified ! *)
     If[!TrueQ[OptionValue["Localize"]], 
       With[{r = pureWLCode},
-        Return[ FakeHold[CompoundExpression @@ r] /. {Hold -> Identity} /. {FakeHold -> Hold}, Module]
+        Return[ FakeHold[CompoundExpression @@ r] /. {Hold2 -> Identity} /. {FakeHold -> Hold}, Module]
       ];
     ];
 
     (* EXIT::2 *)
     (* perform localization of variables and return the result ! *)
-    convertToModule[extractLocalVariables[pureWLCode], pureWLCode] /. {Hold -> Identity} /. {FakeHold -> Hold}  
+    convertToModule[extractLocalVariables[pureWLCode], pureWLCode] /. {Hold2 -> Identity} /. {FakeHold -> Hold}  
 ]
 
 IdentityTransform[a_] := a
@@ -318,12 +318,12 @@ constructWL["Singular", "Number", token_] := ToExpression[token["head"]]
 (* any WL expressions returns WL expression *)
 constructWL["Singular", "Expression", token_] := With[{il=ToExpression[token["head"], InputForm, FakeHold]}, FakeHold[IdentityTransform[il]]]
 constructWL["Normal", "Expression", token_] := With[{il=ToExpression[token["head"], InputForm, FakeHold]}, FakeHold[IdentityTransform[il[]]]]
-constructWL["Nested", "Expression", token_, args_] := With[{il=ToExpression[token["head"], InputForm, FakeHold]}, FakeHold[IdentityTransform[il @@ args]]] 
+constructWL["Nested", "Expression", token_, args_] := With[{il=ToExpression[token["head"], InputForm, FakeHold]}, FakeHold[IdentityTransform[il @@ Unevaluated[args]]]] 
 
 (* if options are provided *)
-constructWL["Singular", opts_List, "Expression", token_] := With[{il=ToExpression[token["head"], InputForm, FakeHold]}, FakeHold[IdentityTransform[il@@opts]]]
-constructWL["Normal", opts_List, "Expression", token_] := With[{il=ToExpression[token["head"], InputForm, FakeHold]}, FakeHold[IdentityTransform[il@@opts]]]
-constructWL["Nested", opts_List, "Expression", token_, args_] := With[{il=ToExpression[token["head"], InputForm, FakeHold]}, FakeHold[IdentityTransform[il @@ Join[args, opts]]]] 
+constructWL["Singular", opts_List, "Expression", token_] := With[{il=ToExpression[token["head"], InputForm, FakeHold]}, FakeHold[IdentityTransform[il@@Unevaluated[opts]]]]
+constructWL["Normal", opts_List, "Expression", token_] := With[{il=ToExpression[token["head"], InputForm, FakeHold]}, FakeHold[IdentityTransform[il@@Unevaluated[opts]]]]
+constructWL["Nested", opts_List, "Expression", token_, args_] := With[{il=ToExpression[token["head"], InputForm, FakeHold]}, With[{a = Join[args, opts]}, FakeHold[IdentityTransform[il @@ Unevaluated[a]]]]] 
 
 
 
@@ -383,7 +383,7 @@ constructWL[Token["Nested", head_, tail_, child_]] :=
 (*** Language manipulation tools ***)
 
 convertToModule[vars_, body_] := vars /. _@{v__} :> FakeHold[Module[{v}, CompoundExpression @@ Join[{garbageList[FakeHold[vars]]}, body]]]
-convertToModule[Hold[{}], body_]    := FakeHold[CompoundExpression @@ body]
+convertToModule[Hold2[{}], body_]    := FakeHold[CompoundExpression @@ body]
 
 (*** garbage collection ***)
 
@@ -393,15 +393,21 @@ garbageList[list_] := (
   AppendTo[garbageCollection, list];
 )
 
+
 extractLocalVariables[exprs_List] := Module[{localVariables = {}},
   (* capture all set and setdelayed in the top-level *)
 
+
+
   exprs /. {
-   Hold[Set[a_, b_]] :> AppendTo[localVariables, Hold[a]], 
-   Hold[SetDelayed[a_, b_]] :> AppendTo[localVariables, Hold[a]], 
-   Hold[CompoundExpression[SetDelayed[a_, b_], args__]] :> AppendTo[localVariables, Hold[a]],
-   Hold[CompoundExpression[Set[a_, b_], args__]] :> AppendTo[localVariables, Hold[a]]
+   Hold2[CompoundExpression[Set[List[a__Symbol], b_], Null ] ] :> With[{list = List[a]}, AppendTo[localVariables, Hold2[#]]&/@list], 
+   Hold2[Set[a_, b_]] :> AppendTo[localVariables, Hold2[a]], 
+   Hold2[SetDelayed[a_, b_]] :> AppendTo[localVariables, Hold2[a]], 
+   Hold2[CompoundExpression[SetDelayed[a_, b_], args__]] :> AppendTo[localVariables, Hold2[a]],
+   Hold2[CompoundExpression[Set[a_, b_], args__]] :> AppendTo[localVariables, Hold2[a]]
   };
+
+
   
   (* extract symbol names from DownValues and OwnValues *)
   localVariables = 
@@ -411,13 +417,17 @@ extractLocalVariables[exprs_List] := Module[{localVariables = {}},
     ],
       #
   ,
-      Extract[#, {1, 0}, Hold]
+      Extract[#, {1, 0}, Hold2]
   ] & /@ localVariables;
+
+  localVariables = Complement[localVariables, {Hold2[Options], Hold2[List]}];
+
+  Print[localVariables];
 
   (* flatten the list *)
   With[{l = DeleteDuplicates[localVariables]},
     FakeHold[l]
-  ] /. {Hold[x_] :> x} /. {FakeHold -> Hold}
+  ] /. {Hold2[x_] :> x} /. {FakeHold -> Hold2}
 ]
 
 
@@ -441,6 +451,7 @@ SplitExpression[astr_] :=
 (* utils for making modules/blocks *)
 SetAttributes[FakeSet, HoldAll]
 SetAttributes[FakeHold, HoldAll]
+SetAttributes[Hold2, HoldAll]
 SetAttributes[FakeBlock, HoldAll]
 
 blockToExpression[input_List] := With[{},
@@ -455,9 +466,9 @@ makeBlock[vars_List, inner_] :=
         ]}
     },
 
-   With[{v = Hold[c] /. {FakeHold[x_] :> x} /. {FakeSet :> Set}},
+   With[{v = Hold2[c] /. {FakeHold[x_] :> x} /. {FakeSet :> Set}},
     FakeBlock[v, 
-       ArgsPlaceHolder] /. {Hold[x_] -> x} /. {ArgsPlaceHolder -> 
+       ArgsPlaceHolder] /. {Hold2[x_] -> x} /. {ArgsPlaceHolder -> 
        FakeHold[inner]}
     ]
    ])

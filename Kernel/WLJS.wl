@@ -12,9 +12,15 @@ SetAttributes[Offload, HoldFirst]
 SetAttributes[FrontEndOnly, HoldFirst]
 
 
-WLJSHeader[list_String] := With[{},
-    (StringRiffle[StringTemplate["<script type=\"module\" src=\"``\"></script>"]/@StringTrim/@StringSplit[list, "\n"], "\n"])<>"<script type=\"module\">core.Offload = core.Hold;</script>"
+WLJSHeader[list_String, OptionsPattern[]] := With[{list = OptionValue["List"]},
+    StringRiffle[StringTemplate["<script type=\"module\" src=\"``\"></script>"]/@ Join[(StringTrim/@StringSplit[list, "\n"]), list], "\n"]
 ]
+
+WLJSHeader[OptionsPattern[]] := With[{},
+    StringRiffle[StringTemplate["<script type=\"module\" src=\"``\"></script>"]/@ OptionValue["List"], "\n"]
+]
+
+Options[WLJSHeader] = {"List" -> {}}
 
 
 WLJS[expr__, OptionsPattern[]] := With[{uid = CreateUUID[], class = OptionValue["Class"]},
