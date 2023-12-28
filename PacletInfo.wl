@@ -16,7 +16,8 @@ PacletObject[
         "Context" -> {
           {"JerryI`WLX`", "WLX.wl"},
           {"JerryI`WLX`Importer`", "Importer.wl"},
-          {"JerryI`WLX`WLJS`", "WLJS.wl"}
+          {"JerryI`WLX`WLJS`", "WLJS.wl"},
+          {"JerryI`WLX`WebUI`", "WebUI.wl"}
         },
         "Symbols" -> {}
       },
@@ -24,6 +25,7 @@ PacletObject[
         "Asset",
         "Assets" -> {
           {"ReadMe", "./README.md"},
+          {"Kit", {"Kernel", "WebUI.wlx"}},
           {"ExamplesFolder", "./Examples"},
           {"Image", "./logo.png"}
         }
