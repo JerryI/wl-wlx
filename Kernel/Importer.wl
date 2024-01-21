@@ -27,17 +27,29 @@ importComponent[filename_String, opts___] := (
 )
 
 ImportComponent[filename_String, opts___] := (
-    (* check the cache first! *)
-    With[{object = cache[loadData[filename, opts], cinterval]},
-        With[{p = object[[2]]["Path"], body = object[[1]]}, 
-            Block[{Global`$WLXInputPath = DirectoryName[p]}, 
-                ReleaseHold[body] 
-            ] 
+    If[StringTake[filename, -3] === ".wl", loadNormalWlFile[filename], 
+        (* check the cache first! *)
+        With[{object = cache[loadData[filename, opts], cinterval]},
+            With[{p = object[[2]]["Path"], body = object[[1]]}, 
+                Block[{Global`$WLXInputPath = DirectoryName[p]}, 
+                    ReleaseHold[body] 
+                ] 
+            ]
         ]
     ]
 )
 
 ImportComponent /: SetDelayed[symbol_, ImportComponent[args_, opts___]] := With[{e = importComponent[args, opts]}, SetDelayed[symbol, e]]
+
+loadNormalWlFile[filename_String] := Module[{data, path},
+    (* search by relative first *)
+    path = {Global`$WLXInputPath, filename // processFileName} // Flatten // FileNameJoin;
+    If[!TrueQ[FileExistsQ[path]],
+        path = filename // processFileName // FileNameJoin;
+    ];
+    
+    Get[path]
+]
 
 loadData[filename_String, opts_: Rule["Localize", True]] := Module[{data, path},
     (* search by relative first *)
@@ -95,10 +107,12 @@ cache = Identity[#1]&
 
 Print["Caching is not enabled! Type JerryI`WLX`Importer`CacheControl[True] to set it for all IO operations"];
 
+cache = wcache; cinterval = "Hour";
+
 CacheContol[False] := (cache = Identity; "Caching was disabled") 
 CacheContol[True]  := (cache = wcache; cinterval = "Minute"; "Caching was enabled for 1 minute") 
 CacheContol["Minute"]  := (cache = wcache; cinterval = "Minute"; "Caching was enabled for 1 minute") 
-CacheContol["Hour"]  := (cache = wcache; cinterval = "Minute"; "Caching was enabled for 1 hour") 
+CacheContol["Hour"]  := (cache = wcache; cinterval = "Hour"; "Caching was enabled for 1 hour") 
 
 End[]
 

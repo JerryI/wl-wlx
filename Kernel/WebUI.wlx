@@ -5,15 +5,24 @@ WebUILazyLoad[content_, OptionsPattern[]] := With[{event = EventClone[OptionValu
     EventHandler[event, {
         
     "Load" -> Function[data,
-        If[KeyExistsQ[data, "Downvalues"],
-            With[{data = content @@ (data["Downvalues"])},
-                WebSocketSend[data["Client"], $DefaultSerializer @ UILazyLoad["Load", uid, ToString[data] ] ];
+      Block[{WebUILazyLoadDataProvided = data},
+        If[AssociationQ[data],
+            If[KeyExistsQ[data, "Downvalues"],
+                With[{data = content @@ (data["Downvalues"])},
+                    WebSocketSend[data["Client"], $DefaultSerializer @ UILazyLoad["Load", uid, ToString[data] ] ];
+                ]
+            ,
+                WebSocketSend[data["Client"], $DefaultSerializer @ UILazyLoad["Load", uid, ToString[content] ] ];
             ]
         ,
-            WebSocketSend[data["Client"], $DefaultSerializer @ UILazyLoad["Load", uid, ToString[content] ] ];
-        ];
+            WebSocketSend[Global`$Client (*`*), $DefaultSerializer @ UILazyLoad["Load", uid, ToString[content] ] ];
+        ]
+      ]
     ],
 
+    "Remove" -> Function[data,
+        WebSocketSend[data["Client"], $DefaultSerializer @ UILazyLoad["Remove", uid] ];
+    ],
 
     "Hide" -> Function[data,
         WebSocketSend[data["Client"], $DefaultSerializer @ UILazyLoad["Hide", uid] ];
@@ -33,10 +42,14 @@ Options[WebUILazyLoad] = {"Event" -> ""};
 
 SetAttributes[WebUILazyLoad, HoldFirst];
 
+WebUISubmit[expr_, client_:Global`$Client (*`*)] := WebSocketSend[client, $DefaultSerializer @ expr ];
+
+WebUILocation[loc_String, client_:Global`$Client (*`*)] := WebUISubmit[UILocation[loc], client]
+
 (* /* WLX Refresher */ *)
 (* /* holds expressions inside and loads by a signal via WebSockets */ *)
 
-WebUIRefresh[Content_, OptionsPattern[]] := With[{event = EventClone[OptionValue["Event"]], uid = CreateUUID[]},
+WebUIRefresh[Content_, OptionsPattern[]] := With[{event = EventClone[OptionValue["Event"]], uid = CreateUUID[], Class = OptionValue["Class"]},
     EventHandler[event, {
         
     "Refresh" -> Function[data,
@@ -51,31 +64,58 @@ WebUIRefresh[Content_, OptionsPattern[]] := With[{event = EventClone[OptionValue
     }];
 
 
-    <div id="{uid}">
+    <div id="{uid}" class="{Class}">
         <Content/>
     </div>
 ];
 
-Options[WebUIRefresh] = {"Event" -> ""};
+Options[WebUIRefresh] = {"Event" -> "", "Class"->""};
 
 SetAttributes[WebUIRefresh, HoldFirst];
 
+(* /* WebUIContainer */ *)
+WebUIContainer[arg_, OptionsPattern[]] := With[{Uid = CreateUUID[], Event = OptionValue["Event"]},
+    EventHandler[EventClone[Event], {
+        "Append" -> Function[data,
+            If[AssociationQ[data["Data"]],
+                WebSocketSend[data["Client"], $DefaultSerializer @ UILazyContainer["AppendAfterParent", Uid,  data["Data"]["HTML"]] ];
+                WebSocketSend[data["Client"], $DefaultSerializer @ UILazyContainer["AppendScript", data["Data"]["Script"]] ];
+            ,
+                WebSocketSend[data["Client"], $DefaultSerializer @ UILazyContainer["AppendAfterParent", Uid,  data["Data"]] ];
+            ]
+        ]
+    }];
+
+    Block[{WebUIContainerChild = <div id="{Uid}"></div>},
+        With[{result = arg},
+            result
+        ]
+    ]
+]
+
+SetAttributes[WebUIContainer, HoldFirst];
+Options[WebUIContainer] = {"Event" -> Null};
 
 (* /* WLX JS Binder */ *)
 (* /* connects arbitary JS scripts with WL Event system */ *)
 
 WebUIJSBind[Script__String, OptionsPattern[]] := With[{Event = OptionValue["Event"], Uid = CreateUUID[], Str = StringJoin[Script]},
-    EventHandler[EventClone[Event], {any_ :> Function[data,
+    EventHandler[EventClone[Event], {any_String :> Function[data,
         WebSocketSend[data["Client"], $DefaultSerializer @ UILazyEventDispatch[Uid, any, data]];
     ]}];
 
-
-    <script type="module">
-        new UIJSScript({target: async function() {<Str/>}, uid: '<Uid/>'})
-    </script>
+    If[!OptionValue["ScriptTag"],
+        <Dummy>
+            new UIJSScript({target: async function() {<Str/>}, uid: '<Uid/>'})
+        </Dummy>
+    ,
+        <script type="module">
+            new UIJSScript({target: async function() {<Str/>}, uid: '<Uid/>'})
+        </script>
+    ]
 ]
 
-Options[WebUIJSBind] = {"Event" -> ""};
+Options[WebUIJSBind] = {"Event" -> "", "ScriptTag"->True};
 
 WebUIOnLoad[OptionsPattern[]] := With[{Event = OptionValue["Event"], Type = OptionValue["Type"]},
     <script type="module">
@@ -83,25 +123,91 @@ WebUIOnLoad[OptionsPattern[]] := With[{Event = OptionValue["Event"], Type = Opti
     </script>
 ]
 
+WebUIAliveQ[client_:Global`$Client(*`*)] := If[!FailureQ[WebSocketSend[client, $DefaultSerializer @ 7]], !FailureQ[WebSocketSend[client, $DefaultSerializer @ 7]], False]
+
+
 Options[WebUIOnLoad] = {"Event" -> "xyz", "Type"->"Default"};
 
 (* /* WLX Event listener */ *)
 (* /* adds an event listener to an DOM element and sends generated data to Kernel via WebSockets */ *)
 
-WebUIEventListener[OptionsPattern[]] := With[{Event = OptionValue["Event"], Type = OptionValue["Type"], Id = OptionValue["Id"]},
+WebUIEventListener[OptionsPattern[]] := With[{Pattern = OptionValue["Pattern"], Event = OptionValue["Event"], Type = OptionValue["Type"], Id = OptionValue["Id"]},
     <script type="module">
         const el = document.getElementById('<Id/>');
         el.addEventListener('<Type/>', function (e) {
-            server.emitt('<Event/>', '"'+el.value+'"');
+            server.emitt('<Event/>', '"'+el.value+'"', '<Pattern/>');
         });
     </script>
 ];
 
-Options[WebUIEventListener] = {"Event"->"", "Type"->"click", "Id"->""};
+Options[WebUIEventListener] = {"Event"->"", "Type"->"click", "Id"->"", "Pattern"->"Button"};
+
+WebUIFetch[expr_, client_:Global`$Client(*`*), OptionsPattern[]] := With[{format = OptionValue["Format"], event = CreateUUID[], promise = Promise[]},
+    EventHandler[event, Function[payload,
+        EventRemove[event];
+
+        With[{result = Switch[format,
+            "Raw",
+                payload,
+            "ExpressionJSON",
+                ImportString[payload, "ExpressionJSON"],
+            _,
+                ImportString[payload, "JSON"]
+        ]},
+            If[FailureQ[result],
+                EventFire[promise, Reject, result]
+            ,
+                EventFire[promise, Resolve, result]
+            ]
+        ]
+    ]];
+
+    WebUISubmit[Global`UIAsk[expr, event](*`*), client];
+
+    promise
+]
+
+Options[WebUIFetch] = {"Format"->"ExpressionJSON"};
 
 (* /* PUT IT TO THE HEADER */ *)
 WebUIInitializationScript = With[{},
     <script type="module">
+        core.UIAsk = async (args, env) => {
+            const result = await interpretate(args[0]);
+            const uid = await interpretate(args[1]);
+            console.warn("A request from server");
+            //console.log(result);
+            //console.log(JSON.stringify(result));
+
+            server.emitt(uid, '"' + JSON.stringify(result).replace(/"/gm, "\\\"") + '"');
+        }
+
+        core.UILocation = async (args, env) => {
+            const url = await interpretate(args[0], env);
+            window.location = url;
+        }
+
+        core.UILazyContainer = async (args, env) => {
+            const type = await interpretate(args[0], env);
+            await core.UILazyContainer[type](args.slice(1), env);
+        }
+
+        core.UILazyContainer.AppendAfterParent = async (args, env) => {
+            const uid = await interpretate(args[0], env);
+            const data = await interpretate(args[1], env);
+
+            const element = document.getElementById(uid).parentNode;
+            element.insertAdjacentHTML("afterbegin", data);
+        }
+
+        core.UILazyContainer.AppendScript = async (args, env) => {
+           
+            const data = await interpretate(args[0], env);
+            const script = document.createElement('script');
+            script.textContent = data;
+            document.body.appendChild(script);
+        }
+
         core.UILazyLoad = async (args, env) => {
             const type = await interpretate(args[0], env);
             await core.UILazyLoad[type](args.slice(1), env);
@@ -118,6 +224,12 @@ WebUIInitializationScript = With[{},
             const uid = await interpretate(args[0], env);
             document.getElementById(uid).classList.add("hidden");
         } 
+
+        core.UILazyLoad.Remove = async (args, env) => {
+            const uid = await interpretate(args[0], env);
+            document.getElementById(uid).innerHTML = "";
+            document.getElementById(uid).classList.remove("hidden");
+        }         
 
         core.UILazyLoad.Show = async (args, env) => {
             const uid = await interpretate(args[0], env);
