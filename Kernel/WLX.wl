@@ -2,6 +2,7 @@ BeginPackage["JerryI`WLX`", {"CodeParser`"}]
 
 ProcessString::usage = "ProcessString[str_String] processes str to a plain WL expressions"
 ToStringRiffle::usage = "ToString, but turns arrays into a string as well"
+Dummy::usage = "dummy analogue from HTML, but acts as ToStringRiffle"
 
 Begin["`Private`"]
 
@@ -296,6 +297,7 @@ generatePlaceholders[Token["Singular", head_]] :=
 (* helper function *)
 
 ToStringRiffle[expr_] := ToString[expr];
+Dummy[expr__] := StringRiffle[ToString /@ List[expr], ""];
 ToStringRiffle[expr_List] := StringRiffle[ToString /@ expr, "\n"];
 
 
@@ -422,7 +424,7 @@ extractLocalVariables[exprs_List] := Module[{localVariables = {}},
 
   localVariables = Complement[localVariables, {Hold2[Options], Hold2[List]}];
 
-  Print[localVariables];
+ 
 
   (* flatten the list *)
   With[{l = DeleteDuplicates[localVariables]},
