@@ -21,12 +21,12 @@ EvaluationHolderObject /: SetDelayed[symbol_, EvaluationHolderObject[obj_, assoc
 )]
 SetAttributes[EvaluationHolderObject, HoldFirst]
 
-importComponent[filename_String, opts___] := (
+importComponent[filename_, opts___] := (
     (* check the cache first! *)
     cache[loadData[filename, opts], cinterval]
 )
 
-ImportComponent[filename_String, opts___] := (
+ImportComponent[filename_, opts___] := (
     If[StringTake[filename, -3] === ".wl", loadNormalWlFile[filename], 
         (* check the cache first! *)
         With[{object = cache[loadData[filename, opts], cinterval]},
@@ -58,7 +58,15 @@ loadData[filename_String, opts_: Rule["Localize", True]] := Module[{data, path},
         path = filename // processFileName // FileNameJoin;
     ];
     (* check the cache first! *)
-    data = ReadString[path, EndOfFile];
+    data = Import[path, "String"];
+
+    With[{body = ProcessString[data, opts]},
+        EvaluationHolderObject[body, <|"Path"->path|>]
+    ]
+]
+
+loadData[path_, opts_: Rule["Localize", True]] := Module[{data},
+    data = Import[path, "String"];
 
     With[{body = ProcessString[data, opts]},
         EvaluationHolderObject[body, <|"Path"->path|>]
