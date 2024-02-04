@@ -44,7 +44,15 @@ SetAttributes[WebUILazyLoad, HoldFirst];
 
 WebUISubmit[expr_, client_:Global`$Client (*`*)] := WebSocketSend[client, $DefaultSerializer @ expr ];
 
-WebUILocation[loc_String, client_:Global`$Client (*`*)] := WebUISubmit[UILocation[loc], client]
+WebUILocation[loc_String, client_:Global`$Client (*`*), OptionsPattern[]] := With[{},
+    If[OptionValue["Target"] === _,
+        WebUISubmit[UILocationBlank[loc], client]
+    ,
+        WebUISubmit[UILocation[loc], client]
+    ]
+]
+
+Options[WebUILocation] = {"Target" -> "Same"}
 
 (* /* WLX Refresher */ *)
 (* /* holds expressions inside and loads by a signal via WebSockets */ *)
@@ -148,11 +156,11 @@ WebUIFetch[expr_, client_:Global`$Client(*`*), OptionsPattern[]] := With[{format
 
         With[{result = Switch[format,
             "Raw",
-                payload,
+                URLDecode[payload],
             "ExpressionJSON",
-                ImportString[payload, "ExpressionJSON"],
+                ImportString[URLDecode[payload], "ExpressionJSON"],
             _,
-                ImportString[payload, "JSON"]
+                ImportString[URLDecode[payload], "JSON"]
         ]},
             If[FailureQ[result],
                 EventFire[promise, Reject, result]
@@ -179,13 +187,21 @@ WebUIInitializationScript = With[{},
             //console.log(result);
             //console.log(JSON.stringify(result));
 
-            server.emitt(uid, '"' + JSON.stringify(result).replace(/"/gm, "\\\"") + '"');
+            server.emitt(uid, '"' + encodeURIComponent(JSON.stringify(result)) + '"');
         }
 
         core.UILocation = async (args, env) => {
             const url = await interpretate(args[0], env);
             window.location = url;
         }
+
+        core.UILocationBlank = async (args, env) => {
+            const url = await interpretate(args[0], env);
+            const fake = document.createElement('a');
+            fake.target = "_blank";
+            fake.href = url;
+            fake.click();
+        }        
 
         core.UILazyContainer = async (args, env) => {
             const type = await interpretate(args[0], env);
@@ -241,7 +257,7 @@ WebUIInitializationScript = With[{},
             const type = await interpretate(args[1], env);
 
             core.UILazyEventDispatch[uid](type, args[2], env);
-        }     
+        }  
 
         window.UIJSScript = class {
             event = undefined;
