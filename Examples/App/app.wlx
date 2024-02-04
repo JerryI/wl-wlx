@@ -15,8 +15,11 @@ append[xy_] := With[{},
    ];
 ];  
 
+appendEvent = CreateUUID[];
+EventHandler[appendEvent, {"mousemove" -> append}];
+
 (* /* mouse listener */ *)
-listener = {White, EventHandler[Rectangle[{-10, -10}, {10,10}], {"mousemove"->append}]};
+listener = {White, EventListener[Rectangle[{-10, -10}, {10,10}], {"mousemove"->appendEvent}]};
 
 (* /* plot function */ *)
 PlottingDevice = Graphics[{listener, RGBColor[0.1764, 0.8313, 0.74901], PointSize[0.05], Point[Offload[dots]]}, Controls->True, TransitionDuration->50, PlotRange->{{-1,1}, {-1,1}}];
