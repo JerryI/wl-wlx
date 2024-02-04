@@ -12,8 +12,8 @@ SetAttributes[Offload, HoldFirst]
 SetAttributes[FrontEndOnly, HoldFirst]
 
 
-WLJSHeader[list_String, OptionsPattern[]] := With[{list = OptionValue["List"]},
-    StringRiffle[StringTemplate["<script type=\"module\" src=\"``\"></script>"]/@ Join[(StringTrim/@StringSplit[list, "\n"]), list], "\n"]
+WLJSHeader[list1_String, OptionsPattern[]] := With[{list = OptionValue["List"]},
+    StringRiffle[StringTemplate["<script type=\"module\" src=\"``\"></script>"]/@ Join[(StringTrim/@StringSplit[list1, "\n"]), list], "\n"]
 ]
 
 WLJSHeader[OptionsPattern[]] := With[{},

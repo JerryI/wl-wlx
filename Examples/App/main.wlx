@@ -9,11 +9,11 @@ App         = ImportComponent["app.wlx"];
 <html> 
     <Head>
         <WLJSHeader>
-            https://cdn.statically.io/gh/JerryI/wljs-interpreter/main/src/interpreter.js
-            https://cdn.statically.io/gh/JerryI/wljs-interpreter/main/src/core.js
-            https://cdn.statically.io/gh/JerryI/wljs-graphics-d3/main/dist/kernel.js
-            https://cdn.statically.io/gh/JerryI/wljs-plotly/main/dist/kernel.js
-            https://cdn.statically.io/gh/JerryI/wljs-inputs/main/dist/kernel.js
+            https://cdn.statically.io/gh/JerryI/wljs-interpreter/dev/src/interpreter.js
+            https://cdn.statically.io/gh/JerryI/wljs-interpreter/dev/src/core.js
+            https://cdn.statically.io/gh/JerryI/wljs-graphics-d3/dev/dist/kernel.js
+            https://cdn.statically.io/gh/JerryI/wljs-plotly/dev/dist/kernel.js
+            https://cdn.statically.io/gh/JerryI/wljs-inputs/dev/dist/kernel.js
         </WLJSHeader>        
     </Head>  
     <body> 
