@@ -4,7 +4,11 @@ ImportComponent::usage = "s = ImportComponent[filename_String] imports a compone
 
 Placebo::usage = "Identity, but for strings"
 
+TemplateSwizzle::usage = "Use to override components"
+
 Begin["`Private`"]
+
+TemplateSwizzle = <||>;
 
 PackageExists = True
 
@@ -54,14 +58,23 @@ loadNormalWlFile[filename_String] := Module[{data, path},
 loadData[filename_String, opts_: Rule["Localize", True]] := Module[{data, path},
     (* search by relative first *)
     path = {Global`$WLXInputPath, filename // processFileName} // Flatten // FileNameJoin;
-    If[!TrueQ[FileExistsQ[path]],
+    If[!TrueQ[FileExistsQ[path ] ],
         path = filename // processFileName // FileNameJoin;
     ];
-    (* check the cache first! *)
-    data = Import[path, "String"];
+
+    (* check swizzle *)
+
+    If[KeyExistsQ[TemplateSwizzle, Hash[path] ],
+        Echo["Swizzle!!!!"];
+        Echo[path];
+        data = Import[TemplateSwizzle[path // Hash], "String"];
+    ,
+        data = Import[path, "String"];
+    ];
+    
 
     With[{body = ProcessString[data, opts]},
-        EvaluationHolderObject[body, <|"Path"->path|>]
+        EvaluationHolderObject[body, <|"Path"->(path // FileNameJoin)|>]
     ]
 ]
 
