@@ -59,7 +59,7 @@ WebUIClose[cli_:Global`$Client (*`*)] := WebUISubmit[UIClose[], cli]
 (* /* WLX Refresher */ *)
 (* /* holds expressions inside and loads by a signal via WebSockets */ *)
 
-WebUIRefresh[Content_, OptionsPattern[]] := With[{event = EventClone[OptionValue["Event"]], uid = CreateUUID[], Class = OptionValue["Class"]},
+WebUIRefresh[Content__, OptionsPattern[]] := With[{event = OptionValue["Event"], uid = CreateUUID[], Class = OptionValue["Class"], Str = StringRiffle[{Content} // Flatten]},
     EventHandler[event, {
         
     "Refresh" -> Function[data,
@@ -68,20 +68,25 @@ WebUIRefresh[Content_, OptionsPattern[]] := With[{event = EventClone[OptionValue
                 WebSocketSend[data["Client"], $DefaultSerializer @ UILazyLoad["Load", uid, ToString[data] ] ];
             ]
         ,
-            WebSocketSend[data["Client"], $DefaultSerializer @ UILazyLoad["Load", uid, ToString[Content] ] ];
+            WebSocketSend[data["Client"], $DefaultSerializer @ UILazyLoad["Load", uid, ToString[StringRiffle[{Content}]] ] ];
         ];
-      ]
+    ],
+
+    "Clear" -> Function[data,
+        WebSocketSend[data["Client"], $DefaultSerializer @ UILazyLoad["Load", uid, "" ] ];
+    ]
+
     }];
 
 
     <div id="{uid}" class="{Class}">
-        <Content/>
+        <Str/>
     </div>
 ];
 
 Options[WebUIRefresh] = {"Event" -> "", "Class"->""};
 
-SetAttributes[WebUIRefresh, HoldFirst];
+SetAttributes[WebUIRefresh, HoldAll];
 
 (* /* WebUIContainer */ *)
 WebUIContainer[arg_, OptionsPattern[]] := With[{Uid = CreateUUID[], Event = OptionValue["Event"]},
@@ -111,6 +116,7 @@ Options[WebUIContainer] = {"Event" -> Null};
 
 WebUIJSBind[Script__String, OptionsPattern[]] := With[{Event = OptionValue["Event"], Uid = CreateUUID[], Str = StringJoin[Script]},
     EventHandler[EventClone[Event], {any_String :> Function[data,
+        If[!AssociationQ[data], Return[]];
         WebSocketSend[data["Client"], $DefaultSerializer @ UILazyEventDispatch[Uid, any, data]];
     ]}];
 
@@ -151,6 +157,32 @@ WebUIEventListener[OptionsPattern[]] := With[{Pattern = OptionValue["Pattern"], 
 ];
 
 Options[WebUIEventListener] = {"Event"->"", "Type"->"click", "Id"->"", "Pattern"->"Button"};
+
+WebUIKeyListener[OptionsPattern[]] := With[{Pattern = OptionValue["Pattern"], Event = OptionValue["Event"], InternalEvent = CreateUUID[]},
+    EventHandler[Event, {"Start" -> Function[data, WebUISubmit[UILazyEventDispatch[InternalEvent, "Start", True], data["Client"]]], "Stop" -> Function[data, WebUISubmit[UILazyEventDispatch[InternalEvent, "Stop", True]], data["Client"]]}];
+
+    <script type="module">
+        const keyListener = (e) => {
+            console.log(['<Event/>', e.keyCode, '<Pattern/>']);
+            server.emitt('<Event/>', e.keyCode, '<Pattern/>');
+        }
+        core.UILazyEventDispatch['<InternalEvent/>'] = function (type, data, env) {
+            console.log(type);
+            switch (type) {
+                case 'Start':
+                    document.addEventListener('keydown', keyListener);
+                break;
+                case 'Stop':
+                    document.removeEventListener('keydown', keyListener);
+                break;
+            }
+        };
+    </script>
+];
+
+Options[WebUIKeyListener] = {"Event"->"", "Pattern"->"Pressed"};
+
+
 
 WebUIFetch[expr_, client_:Global`$Client(*`*), OptionsPattern[]] := With[{format = OptionValue["Format"], event = CreateUUID[], promise = Promise[]},
     EventHandler[event, Function[payload,

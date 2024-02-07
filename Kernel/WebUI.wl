@@ -15,6 +15,7 @@ WebUIOnLoad::usage = ""
 WebUIAliveQ::usage = ""
 
 WebUIEventListener::usage = ""
+WebUIKeyListener::usage = ""
 
 WebUIFetch::usage = ""
 
