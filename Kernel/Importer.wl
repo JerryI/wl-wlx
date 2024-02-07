@@ -67,9 +67,9 @@ loadData[filename_String, opts_: Rule["Localize", True]] := Module[{data, path},
     If[KeyExistsQ[TemplateSwizzle, Hash[path] ],
         Echo["Swizzle!!!!"];
         Echo[path];
-        data = Import[TemplateSwizzle[path // Hash], "String"];
+        data = Import[TemplateSwizzle[path // Hash], "Text"];
     ,
-        data = Import[path, "String"];
+        data = Import[path, "Text"];
     ];
     
 
@@ -79,7 +79,7 @@ loadData[filename_String, opts_: Rule["Localize", True]] := Module[{data, path},
 ]
 
 loadData[path_, opts_: Rule["Localize", True]] := Module[{data},
-    data = Import[path, "String"];
+    data = Import[path, "Text"];
 
     With[{body = ProcessString[data, opts]},
         EvaluationHolderObject[body, <|"Path"->path|>]
