@@ -4,6 +4,8 @@ WebUILazyLoad::usage = ""
 WebUISubmit::usage = ""
 WebUILocation::usage = ""
 
+WebUILazyLoadDataProvided::usage = ""
+
 WebUIClose::usage = ""
 WebUIRefresh::usage = ""
 WebUIContainer::usage = ""
