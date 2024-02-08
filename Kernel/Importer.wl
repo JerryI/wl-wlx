@@ -6,6 +6,11 @@ Placebo::usage = "Identity, but for strings"
 
 TemplateSwizzle::usage = "Use to override components"
 
+$Options;
+$FirstChild;
+$Children;
+
+
 Begin["`Private`"]
 
 TemplateSwizzle = <||>;
@@ -17,11 +22,11 @@ Placebo[str_] := ToString[str]
 
 (* evaluation tricks *)
 EvaluationHolderObject /: SetDelayed[symbol_, EvaluationHolderObject[obj_, assoc_]] := With[{p = assoc["Path"]}, (
-    symbol[rules_Rule] := Block[{Global`$WLXInputPath = DirectoryName[p], Global`$Children = {}, Global`$FirstChild = Null, Global`$Options = Association[rules // List]}, ReleaseHold[obj]];
-    symbol[rules__Rule] := Block[{Global`$WLXInputPath = DirectoryName[p], Global`$Children = {}, Global`$FirstChild = Null, Global`$Options = Association[rules // List]}, ReleaseHold[obj]];
-    symbol[arg_] := Block[{Global`$WLXInputPath = DirectoryName[p], Global`$Children = {arg}, Global`$FirstChild = arg, Global`$Options = Association[{}]}, ReleaseHold[obj]];
-    symbol[arg_, rules__Rule] := Block[{Global`$WLXInputPath = DirectoryName[p], Global`$Children = {arg}, Global`$FirstChild = arg, Global`$Options = Association[rules // List]}, ReleaseHold[obj]];
-    symbol[arg_, rest___, rules___Rule] := Block[{Global`$WLXInputPath = DirectoryName[p], Global`$Children = List[arg, rest], Global`$FirstChild = arg, Global`$Options = Association[rules // List]}, ReleaseHold[obj]];
+    symbol[rules_Rule] := Block[{Global`$WLXInputPath = DirectoryName[p], $Children = {}, $FirstChild = Null, $Options = Association[rules // List]}, ReleaseHold[obj]];
+    symbol[rules__Rule] := Block[{Global`$WLXInputPath = DirectoryName[p], $Children = {}, $FirstChild = Null, $Options = Association[rules // List]}, ReleaseHold[obj]];
+    symbol[arg_] := Block[{Global`$WLXInputPath = DirectoryName[p], $Children = {arg}, $FirstChild = arg, $Options = Association[{}]}, ReleaseHold[obj]];
+    symbol[arg_, rules__Rule] := Block[{Global`$WLXInputPath = DirectoryName[p], $Children = {arg}, $FirstChild = arg, $Options = Association[rules // List]}, ReleaseHold[obj]];
+    symbol[arg_, rest___, rules___Rule] := Block[{Global`$WLXInputPath = DirectoryName[p], $Children = List[arg, rest], $FirstChild = arg, $Options = Association[rules // List]}, ReleaseHold[obj]];
 )]
 SetAttributes[EvaluationHolderObject, HoldFirst]
 

@@ -74,7 +74,15 @@ WebUIRefresh[Content__, OptionsPattern[]] := With[{event = OptionValue["Event"],
 
     "Clear" -> Function[data,
         WebSocketSend[data["Client"], $DefaultSerializer @ UILazyLoad["Load", uid, "" ] ];
-    ]
+    ],
+
+    "Hide" -> Function[data,
+        WebSocketSend[data["Client"], $DefaultSerializer @ UILazyLoad["Hide", uid] ];
+    ],
+    
+    "Show" -> Function[data,
+        WebSocketSend[data["Client"], $DefaultSerializer @ UILazyLoad["Show", uid] ];
+    ]    
 
     }];
 
