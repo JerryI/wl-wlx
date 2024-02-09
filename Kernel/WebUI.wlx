@@ -238,6 +238,7 @@ WebUIInitializationScript = With[{},
 
         core.UILocation = async (args, env) => {
             const url = await interpretate(args[0], env);
+            server.socket.close();
             window.location = url;
         }
 
