@@ -1,6 +1,6 @@
 BeginPackage["JerryI`WLX`Importer`", {"JerryI`WLX`"}]
 
-ImportComponent::usage = "s = ImportComponent[filename_String] imports a component into a given symbol"
+ImportComponent::usage = "ImportComponent[filename_String] imports a component"
 
 Placebo::usage = "Identity, but for strings"
 

@@ -1,4 +1,4 @@
-BeginPackage["JerryI`WLX`WLJS`"]
+BeginPackage["JerryI`WLX`WLJS`", {"JerryI`Misc`Events`"}]
 
 WLJSHeader::usage = "place scripts of WLJS libs"
 WLJS::usage = "WLJS[expr] embeds any wolfram expression and executes it using WLJS"
@@ -22,6 +22,7 @@ WLJSHeader[OptionsPattern[]] := With[{},
 
 Options[WLJSHeader] = {"List" -> {}}
 
+EventObject /: WLJS[EventObject[assoc_], opts:OptionsPattern[] ] := WLJS[ assoc["View"], opts ] 
 
 WLJS[expr__, OptionsPattern[]] := With[{uid = CreateUUID[], class = OptionValue["Class"]},
     If[TrueQ[OptionValue["NoVirtual"]],
