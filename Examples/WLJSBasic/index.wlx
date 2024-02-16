@@ -1,3 +1,0 @@
-Main := ImportComponent["main.wlx"];
-
-<Main Request={$FirstChild}/>

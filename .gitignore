@@ -2,4 +2,7 @@
 *.html
 wl_packages_lock.wl
 wl_packages
+wljs_packages_lock.wl
+wljs_packages_users.wl
+wljs_packages
 Build
