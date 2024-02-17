@@ -1,15 +1,20 @@
 #!/usr/bin/env wolframscript
 (* ::Package:: *)
-Get["https://raw.githubusercontent.com/JerryI/wl-localpackages/main/Kernel/LPM.wl"];
+SetDirectory[FileNameJoin[{If[StringQ[NotebookDirectory[]], NotebookDirectory[], DirectoryName[$InputFileName]]}]]
+
+Uncompress["1:eJx1T8tuwjAQDBT1wo0/6Ac0vveKKAoNCJoDZ5NugsXGtrwbBf6edawKLlzG+5rxzMfJ/TZvWZbRVKBomkms5wLfBmF1NcR0qN6lL/fbfMC0j4Q18
+PM80mkmcDR8TlexK0Ug7SKnAh5f9F0aRoGi8y5wVUp5Zvb0pVTQQ96KTn/qCULtLIPlvHad2kAIt0IN+Imu1uh1fdEtkOq0seoHggVUydForuJgbJsCLgSWTj7r7d/q6gMQGWfT
+Lt7KLPp4ZPq3+qz0Iv6Yddcj3gGoDVPG"];
 
 PacletRepositories[{
   Github -> "https://github.com/KirillBelovTest/Objects",
   Github -> "https://github.com/KirillBelovTest/Internal",
-  Github -> "https://github.com/JerryI/CSocketListener" -> "dev",
+  Github -> "https://github.com/JerryI/CSocketListener" -> "dev2024",
   Github -> "https://github.com/KirillBelovTest/TCPServer",
   Github -> "https://github.com/KirillBelovTest/HTTPHandler",
   Github -> "https://github.com/KirillBelovTest/WebSocketHandler",
-  Github -> "https://github.com/JerryI/wl-misc" -> "dev"
+  Github -> "https://github.com/JerryI/wl-misc" -> "dev",
+  Github -> "https://github.com/JerryI/wl-wljs-packages"
 }]
 
 ENV = <|
@@ -31,14 +36,30 @@ ENV["WAddr"] := StringTemplate["``:``"][ENV["Host"], ENV["WSPort"]]
 
 <<KirillBelov`WebSocketHandler`
 
-<<JerryI`Misc`Events`
-<<JerryI`Misc`WLJS`Transport`
-
-SetDirectory[FileNameJoin[{If[StringQ[NotebookDirectory[]], NotebookDirectory[], DirectoryName[$InputFileName]], "App"}]]
 Get[FileNameJoin[{ParentDirectory[Directory[]]//ParentDirectory,"Kernel", "WLX.wl"}]]
 Get[FileNameJoin[{ParentDirectory[Directory[]]//ParentDirectory,"Kernel", "Importer.wl"}]]
-Get[FileNameJoin[{ParentDirectory[Directory[]]//ParentDirectory,"Kernel", "Highlighter.wl"}]]
 Get[FileNameJoin[{ParentDirectory[Directory[]]//ParentDirectory,"Kernel", "WLJS.wl"}]]
+
+(* Event handling and WLJS communication *)
+<<JerryI`Misc`Events`
+<<KirillBelov`CSockets`EventsExtension`
+<<JerryI`Misc`WLJS`Transport`
+<<JerryI`Misc`Async`
+
+<<JerryI`WLJSPM`
+
+WLJS`PM`Repositories[{
+  Github -> "https://github.com/JerryI/wljs-interpreter" -> "dev",
+  Github -> "https://github.com/JerryI/wljs-graphics-d3" -> "dev",
+  Github -> "https://github.com/JerryI/wljs-inputs" -> "dev"
+}]
+
+(* import libs data *)
+Map[Function[path,
+    Block[{System`$RemotePackageDirectory = FileNameJoin[{"wljs_packages", FileNameSplit[path] // First}]},
+        FileNameJoin[{"wljs_packages", path}] // Get // Quiet;
+    ];
+], WLJS`PM`Includes["kernel"] ];
 
 Print["Staring HTTP server..."];
 
@@ -47,13 +68,20 @@ tcp["CompleteHandler", "HTTP"] = HTTPPacketQ -> HTTPPacketLength;
 tcp["MessageHandler", "HTTP"] = HTTPPacketQ -> http;
 
 
-index := ImportComponent["index.wlx"];
+Main = ImportComponent["Main.wlx"];
 FileRequestQ[request_] := (!MissingQ[request["Query"]["file"]])
 
 http = HTTPHandler[];
 
-http["MessageHandler", "File"] = FileRequestQ -> ImportFile
-http["MessageHandler", "Index"] = AssocMatchQ[<|"Method" -> "GET"|>] -> Function[x, index[x]]
+http["MessageHandler", "FileJS"]  = GetFileRequestQ[{"js", "css"}] -> Function[request,
+  ImportFile[request, "Base" -> {"wljs_packages"}] 
+]
+
+http["MessageHandler", "File"]  = FileRequestQ -> Function[request,
+  ImportFile[request, "Base" -> {Directory[]}] 
+]
+
+http["MessageHandler", "Index"] = AssocMatchQ[<|"Method" -> "GET"|>] -> Main
 
 (* ::End::*)
 httplistener =  SocketListen[CSocketOpen[ENV["HAddr"]], tcp@# &]
@@ -79,7 +107,7 @@ WLJSTransportHandler["GetSymbol"] = Function[{expr, client, callback},
     callback[expr // ReleaseHold];
 ]
 
-SocketListen[CSocketOpen[ENV["WAddr"]], wcp@#&];
+SocketListen[CSocketOpen[ENV["WAddr"]], wcp@#&, "SocketEventsHandler"->CSocketsClosingHandler];
 
 SetAttributes[Offload, HoldFirst];
 
