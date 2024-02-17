@@ -1,4 +1,4 @@
-ContentList := ImportComponent["components/list.wlx"];
+ContentList := ImportComponent["Components/List.wlx"];
 
 Files = <|
 

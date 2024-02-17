@@ -1,7 +1,7 @@
 Label = $Options["Label"];
-UID = $Options["UID"];
+Event = $Options["Event"];
 
-<div class="flex items-center" id="{UID}">
+<div class="flex items-center" id="{Event}">
     <style>
         .bg-wlx-500 {
             background-color: #2dd4bf;
@@ -14,7 +14,7 @@ UID = $Options["UID"];
         <span class="font-medium text-gray-900"><Label/></span>
     </span>
     <script type="module">
-        const body = document.getElementById("<UID/>");
+        const body = document.getElementById("<Event/>");
         const button = body.getElementsByTagName("button")[0];
         const span = button.firstChild;
         let state = false;
@@ -22,7 +22,7 @@ UID = $Options["UID"];
             button.classList.toggle("bg-wlx-500");
             span.classList.toggle("translate-x-5");
             state = ~state;
-            server.emitt("<UID/>", state ? 'True' : 'False')
+            server.emitt("<Event/>", state ? 'True' : 'False')
         })
     </script>
 </div>
