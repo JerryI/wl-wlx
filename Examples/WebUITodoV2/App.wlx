@@ -1,9 +1,8 @@
 (* /* importing dynamic components */ *)
 
-Head       := ImportComponent["Components/Head.wlx"];
-Logo       := ImportComponent["Components/Logo.wlx"];
+Head        := ImportComponent["Components/Head.wlx"];
+Logo        := ImportComponent["Components/Logo.wlx"];
 
-Sidebar     = ImportComponent["Components/Sidebar/Sidebar.wlx"];
 Todo        = ImportComponent["Components/Todo/Todo.wlx"];
 
 (* /* HTML Page */ *)
@@ -12,9 +11,10 @@ ExtensionsStyles = With[{Path = FileNameToURLPath[#]},
   <link rel="stylesheet" href="/{Path}"/> 
 ] &/@ WLJS`PM`Includes["styles"] // ToStringRiffle;
 
+Database = {};
+
 App[request_] := With[{
-    session = CreateUUID[],
-    Path = URLDecode @ request["Path"]
+    session = CreateUUID[]
 },
     <html> 
         <Head>
@@ -24,9 +24,6 @@ App[request_] := With[{
             <WebUIInitializationScript/>
         </Head>  
         <body class="flex flex-row pt-2 h-full dark:bg-gray-700"> 
-            <div class="h-full" style="width: 16rem">
-                <Sidebar Path={Path}/>
-            </div>
             <div class="h-full flex-grow">
                 <header class="bg-white shadow dark:bg-gray-700">
                     <div class="flex items-center mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
@@ -36,7 +33,8 @@ App[request_] := With[{
                 </header>
                 <main>
                     <div class="mx-auto flex shrink max-w-7xl py-6 sm:px-6 lg:px-8 ">
-                        <Todo Request={""}/>
+                        
+                        <Todo Request={Null}/>
                     </div>
                 </main>
             </div>

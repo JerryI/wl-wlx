@@ -155,16 +155,16 @@ Options[WebUIOnLoad] = {"Event" -> "xyz", "Pattern"->"Default"};
 (* /* WLX Event listener */ *)
 (* /* adds an event listener to an DOM element and sends generated data to Kernel via WebSockets */ *)
 
-WebUIEventListener[OptionsPattern[]] := With[{Pattern = OptionValue["Pattern"], Event = OptionValue["Event"], Type = OptionValue["Type"], Id = OptionValue["Id"]},
+WebUIEventListener[OptionsPattern[]] := With[{Pattern = OptionValue["Pattern"], Property = OptionValue["Property"], Event = OptionValue["Event"], Type = OptionValue["Type"], Id = OptionValue["Id"]},
     <script type="module">
         const el = document.getElementById('<Id/>');
         el.addEventListener('<Type/>', function (e) {
-            server.emitt('<Event/>', '"'+el.value+'"', '<Pattern/>');
+            server.emitt('<Event/>', '"'+el.<Property/>+'"', '<Pattern/>');
         });
     </script>
 ];
 
-Options[WebUIEventListener] = {"Event"->"", "Type"->"click", "Id"->"", "Pattern"->"Button"};
+Options[WebUIEventListener] = {"Event"->"", "Type"->"click", "Id"->"", "Pattern"->"Button", "Property"->"value"};
 
 WebUIKeyListener[OptionsPattern[]] := With[{Pattern = OptionValue["Pattern"], Event = OptionValue["Event"], InternalEvent = CreateUUID[]},
     EventHandler[Event, {"Start" -> Function[data, WebUISubmit[UILazyEventDispatch[InternalEvent, "Start", True], data["Client"]]], "Stop" -> Function[data, WebUISubmit[UILazyEventDispatch[InternalEvent, "Stop", True]], data["Client"]]}];
@@ -261,6 +261,20 @@ WebUIInitializationScript = With[{},
 
             const element = document.getElementById(uid).parentNode;
             element.insertAdjacentHTML("afterbegin", data);
+            //execute scripts
+            Array.from(element.firstChild.querySelectorAll("script"))
+            .forEach( oldScriptEl => {
+              const newScriptEl = document.createElement("script");
+              
+              Array.from(oldScriptEl.attributes).forEach( attr => {
+                newScriptEl.setAttribute(attr.name, attr.value) 
+              });
+              
+              const scriptText = document.createTextNode(oldScriptEl.innerHTML);
+              newScriptEl.appendChild(scriptText);
+              
+              oldScriptEl.parentNode.replaceChild(newScriptEl, oldScriptEl);
+          });
         }
 
         core.UILazyContainer.AppendScript = async (args, env) => {
