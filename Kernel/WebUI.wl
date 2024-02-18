@@ -30,7 +30,10 @@ WebUIFetch::usage = ""
 
 
 Begin["`Private`"]
+
+$DefaultSerializer = ExportByteArray[#, "ExpressionJSON"]&
 ImportComponent[FileNameJoin[{$InputFileName // DirectoryName, "WebUI.wlx"}], "Localize"->False];
+
 End["`Private`"]
 
 EndPackage[];
