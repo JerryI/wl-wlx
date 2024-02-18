@@ -16,7 +16,7 @@ attachListeners[client_, controls_] := With[{cloned = EventClone[AppState]},
 
 
 updateNote[uid_String, state_String, client_] := With[{},
-    NotesDatabase[uid, "Checked"] = (state === "on");
+    NotesDatabase[uid, "Checked"] = (state === "true");
     EventFire[AppState, RecordChange[], client];
 ]
 

@@ -1,3 +1,5 @@
+(*/* Layout credits and clever CSS - @robstinson */*)
+
 Component[OptionsPattern[]] := With[{
 	Database = OptionValue["Database"], 
 	UpdateHandler = OptionValue["OnUpdate"],
@@ -28,7 +30,7 @@ Component[OptionsPattern[]] := With[{
     								</span>
     								<span class="ml-4 text-sm"><Content/></span>
     							</label>
-								<WebUIEventListener Event={localControls} Type={"change"} Pattern={Item} Id={Item}/>	
+								<WebUIEventListener Event={localControls} Type={"change"} Property={"checked"} Pattern={Item} Id={Item}/>	
     						</div>
 						]
 		, {Item, Keys @ Database}]
