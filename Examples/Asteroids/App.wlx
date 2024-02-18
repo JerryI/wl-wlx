@@ -48,7 +48,7 @@ calculateProjectile[Projectile[pos_, vel_, lifetime_]] := Module[{newVel = vel},
       ];
    , {p, globalEnemies}];   
 
-   Projectile[pos + (newVel) (0.4 + 0.1 Sin[time]), newVel, lifetime - 0.01]
+   Projectile[pos + 0.4 (newVel) (0.4 + 0.1 Sin[time]), newVel, lifetime - 0.01]
 ]
 
 
@@ -66,7 +66,7 @@ SetAttributes[decreaseLife, HoldFirst];
 calculateEnemies[any_] := any;
 calculateEnemies[Enemy[pos_, life_]] := Module[{newLife = life},
    If[life < 0, Return[Nothing]];
-   If[pos[[2]] < -1, Return[Nothing]];
+   If[pos[[2]] < -1, Return[Enemy[{pos[[1]], 1.5}, newLife]]];
 
    Do[
       If[Norm[p[[1]] - pos] < 0.2, 
@@ -80,11 +80,11 @@ calculateEnemies[Enemy[pos_, life_]] := Module[{newLife = life},
       ];
    , {p, players}];   
    
-   Enemy[pos + {0, -0.05}, newLife]
+   Enemy[pos + {0, -0.02}, newLife]
 ]
 
 spawnEnemies[] := With[{propb = RandomReal[{0,1}]},
-   If[propb > 0.85,
+   If[propb > 0.95,
       globalEnemies = Append[globalEnemies, Enemy[{RandomReal[{-1,1}], 1.2}, 1]];
    ];
 ]
@@ -103,12 +103,16 @@ task = Null;
 checkTask := Module[{},
    If[task === Null, 
       If[Length[Keys[players]] < 1, Return[]];
-      task = SetInterval[calculate, 1000/24.]
+      task = SetInterval[calculate, 1000/50.]
    ,
       If[Length[Keys[players]] < 1, TaskRemove[task]; task = Null];
    ];
 ]
 
+
+proximitySort[prev_, new_] := Module[{},
+   new
+]
 
 (* /**************************** App *********************************/ *)
 
@@ -140,20 +144,18 @@ create[controls_] := Module[{
             ],
 
             UpdateProjectiles -> Function[Null,
-               projectiles = #[[1]] &/@ globalProjectiles;
+               projectiles = proximitySort[projectiles, #[[1]] &/@ globalProjectiles];
             ],
 
             UpdateEnemies -> Function[Null,
-               
-               enemies = #[[1]] &/@ globalEnemies;
-               Echo[life];
+               enemies = proximitySort[enemies, #[[1]] &/@ globalEnemies];
                If[life < 0, 
                   Close[cli];
                ];
             ]
          }];
 
-         EventFire["game", "Add player", <|"Client"->cli, "Target":>target, "Life":>life|>];
+         EventFire["game", "Add player", <|"Client"->cli, "Target":>target, "Life":>life, "Score":>score|>];
          checkTask;
       ]
    }]; 
@@ -179,7 +181,7 @@ create[controls_] := Module[{
       {Blue, PointSize[0.1], Point @ Offload @ enemies},
       RGBColor[1.0 - 0.1764, 1.0 - 0.8313, 1.0 - 0.74901], Point[Offload @ projectiles],
       RGBColor[0.1764, 0.8313, 0.74901], PointSize[0.05], Point[Offload @ positions]
-   }, TransitionDuration->50, PlotRange->{{-1,1}, {-1,1}}]
+   }, TransitionDuration->1, TransitionType->"Linear", PlotRange->{{-1,1}, {-1,1}}]
 ];
 
 
