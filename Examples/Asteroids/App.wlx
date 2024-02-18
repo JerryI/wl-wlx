@@ -85,7 +85,7 @@ calculateEnemies[Enemy[pos_, life_]] := Module[{newLife = life},
 
 spawnEnemies[] := With[{propb = RandomReal[{0,1}]},
    If[propb > 0.95,
-      globalEnemies = Append[globalEnemies, Enemy[{RandomReal[{-1,1}], 1.2}, 1]];
+      globalEnemies = Append[globalEnemies, Enemy[{RandomReal[{-1,1}], 1.5}, 1]];
    ];
 ]
 
@@ -117,7 +117,7 @@ proximitySort[prev_, new_] := Module[{},
 (* /**************************** App *********************************/ *)
 
 create[controls_] := Module[{
-   target = {0,0},
+   target = {0,-1},
    life = 2.,
    score = 0,
    listener,
