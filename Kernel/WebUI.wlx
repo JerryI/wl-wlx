@@ -141,7 +141,7 @@ WebUIJSBind[Script__String, OptionsPattern[]] := With[{Event = OptionValue["Even
 
 Options[WebUIJSBind] = {"Event" -> "", "ScriptTag"->True};
 
-WebUIOnLoad[OptionsPattern[]] := With[{Event = OptionValue["Event"], Type = OptionValue["Type"]},
+WebUIOnLoad[OptionsPattern[]] := With[{Event = OptionValue["Event"], Type = OptionValue["Pattern"]},
     <script type="module">
         server.emitt('<Event/>', 'True', '<Type/>');
     </script>
@@ -150,7 +150,7 @@ WebUIOnLoad[OptionsPattern[]] := With[{Event = OptionValue["Event"], Type = Opti
 WebUIAliveQ[client_:Global`$Client(*`*)] := If[!FailureQ[WebSocketSend[client, $DefaultSerializer @ 7]], !FailureQ[WebSocketSend[client, $DefaultSerializer @ 7]], False]
 
 
-Options[WebUIOnLoad] = {"Event" -> "xyz", "Type"->"Default"};
+Options[WebUIOnLoad] = {"Event" -> "xyz", "Pattern"->"Default"};
 
 (* /* WLX Event listener */ *)
 (* /* adds an event listener to an DOM element and sends generated data to Kernel via WebSockets */ *)
