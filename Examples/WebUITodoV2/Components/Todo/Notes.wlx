@@ -41,6 +41,7 @@ Module[{
 
     "Load" -> Function[data, With[{client = $Client},
       EventFire[LazyLoad, "Load", data];
+      Echo["Widget Loaded!"];
       EventHandler[clonedAppEvents, {
         "Append" -> Function[note,
           Echo["Append!"]

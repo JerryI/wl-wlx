@@ -77,6 +77,10 @@ App = ImportComponent["App.wlx"];
 
 http = HTTPHandler[];
 
+http["MessageHandler", "FileJS"]  = GetFileRequestQ[{"js", "css"}] -> Function[request,
+  ImportFile[request, "Base" -> {"wljs_packages"}] 
+]
+
 http["MessageHandler", "Index"] = AssocMatchQ[<|"Method" -> "GET"|>] -> App
 
 SocketListen[CSocketOpen[ENV["HAddr"]], tcp@#&]
