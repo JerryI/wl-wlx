@@ -5,5 +5,7 @@ wl_packages
 wljs_packages_lock.wl
 wljs_packages_users.wl
 wljs_packages
+.wl_timestamp
+.wljs_timestamp
 LPM.wl
 Build
