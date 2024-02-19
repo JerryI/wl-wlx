@@ -6,7 +6,13 @@
 
 Open-source and free (together with Wolfram Engine)
 
-__See [DOCS](https://jerryi.github.io/wlx-docs/)__
+---
+
+__See [DOCS](https://jerryi.github.io/wlx-docs/)__ 💫
+
+
+---
+
 
 WLX produces regular Wolfram Expressions, that can be used to make components, building blocks for GUI, and advanced data representation using modern tools like HTML/CSS and Javascript
 
