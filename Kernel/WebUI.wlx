@@ -233,8 +233,19 @@ WebUIInitializationScript = With[{},
         }
 
         core.UIClose = async (args, env) => {
+            
+            console.warn('close');
+            if (core.UIClose.unload) return;
             window.close();
         }
+
+        core.UIClose.unload = false;
+
+        window.addEventListener('beforeunload', function (e) {
+            console.warn('unload');
+            //prevent closing the window if a user reloaded the current one
+            core.UIClose.unload = true;
+        });
 
         core.UILocation = async (args, env) => {
             const url = await interpretate(args[0], env);
