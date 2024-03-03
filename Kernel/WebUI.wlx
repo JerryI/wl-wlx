@@ -167,7 +167,7 @@ WebUIEventListener[OptionsPattern[]] := With[{Pattern = OptionValue["Pattern"], 
 Options[WebUIEventListener] = {"Event"->"", "Type"->"click", "Id"->"", "Pattern"->"Button", "Property"->"value"};
 
 WebUIKeyListener[OptionsPattern[]] := With[{Pattern = OptionValue["Pattern"], Event = OptionValue["Event"], InternalEvent = CreateUUID[]},
-    EventHandler[Event, {"Start" -> Function[data, WebUISubmit[UILazyEventDispatch[InternalEvent, "Start", True], data["Client"]]], "Stop" -> Function[data, WebUISubmit[UILazyEventDispatch[InternalEvent, "Stop", True]], data["Client"]]}];
+    EventHandler[Event, {"Start" -> Function[data, WebUISubmit[UILazyEventDispatch[InternalEvent, "Start", True], data["Client"]]], "Stop" -> Function[pdata, WebUISubmit[UILazyEventDispatch[InternalEvent, "Stop", True], pdata["Client"]]]}];
 
     <script type="module">
         const keyListener = (e) => {
