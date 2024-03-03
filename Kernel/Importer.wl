@@ -32,13 +32,13 @@ SetAttributes[EvaluationHolderObject, HoldFirst]
 
 importComponent[filename_, opts___] := (
     (* check the cache first! *)
-    cache[loadData[filename, opts], cinterval]
+    loadData[filename, opts]
 )
 
 ImportComponent[filename_, opts___] := (
     If[StringTake[filename, -3] === ".wl", loadNormalWlFile[filename], 
         (* check the cache first! *)
-        With[{object = cache[loadData[filename, opts], cinterval]},
+        With[{object = loadData[filename, opts]},
             With[{p = object[[2]]["Path"], body = object[[1]]}, 
                 Block[{Global`$WLXInputPath = DirectoryName[p]}, 
                     ReleaseHold[body] 
@@ -50,9 +50,11 @@ ImportComponent[filename_, opts___] := (
 
 ImportComponent /: SetDelayed[symbol_, ImportComponent[args_, opts___]] := With[{e = importComponent[args, opts]}, SetDelayed[symbol, e]]
 
-loadNormalWlFile[filename_String] := Module[{data, path},
+loadNormalWlFile[path_] := With[{base = Global`$WLXInputPath}, cache[loadNormalWlFile[path, base], cinterval] ]
+
+loadNormalWlFile[filename_String, base_] := Module[{data, path},
     (* search by relative first *)
-    path = {Global`$WLXInputPath, filename // processFileName} // Flatten // FileNameJoin;
+    path = {base, filename // processFileName} // Flatten // FileNameJoin;
     If[!TrueQ[FileExistsQ[path]],
         path = filename // processFileName // FileNameJoin;
     ];
@@ -60,9 +62,13 @@ loadNormalWlFile[filename_String] := Module[{data, path},
     Get[path]
 ]
 
-loadData[filename_String, opts_: Rule["Localize", True]] := Module[{data, path},
+loadData[filename_, opts_Rule: Rule["Localize", True]] := With[{base = Global`$WLXInputPath},
+    cache[loadData[filename, base, opts], cinterval]
+]
+
+loadData[filename_String, base_, opts_Rule: Rule["Localize", True]] := Module[{data, path},
     (* search by relative first *)
-    path = {Global`$WLXInputPath, filename // processFileName} // Flatten // FileNameJoin;
+    path = {base, filename // processFileName} // Flatten // FileNameJoin;
     If[!TrueQ[FileExistsQ[path ] ],
         path = filename // processFileName // FileNameJoin;
     ];
@@ -83,7 +89,7 @@ loadData[filename_String, opts_: Rule["Localize", True]] := Module[{data, path},
     ]
 ]
 
-loadData[path_, opts_: Rule["Localize", True]] := Module[{data},
+loadData[path_, base_, opts_Rule: Rule["Localize", True]] := Module[{data},
     data = Import[path, "Text"];
 
     With[{body = ProcessString[data, opts]},
