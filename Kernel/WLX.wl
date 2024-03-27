@@ -75,6 +75,14 @@ ProcessString[pstr_String, OptionsPattern[]] := Module[{str, open, close, singul
 
 IdentityTransform[a_] := a
 
+System`WLXForm;
+
+$BoxForms = Append[$BoxForms, WLXForm]
+
+(* identity transformation *)
+WLXForm /: MakeBoxes[any_, WLXForm] := any
+WLXForm /: FormBox[expr_, WLXForm] := expr 
+
 Options[ProcessString] = {
   "Localize" -> False,
   "Trimmer" -> Trimmer,
