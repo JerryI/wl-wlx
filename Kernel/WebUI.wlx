@@ -327,7 +327,8 @@ WebUIInitializationScript = With[{},
         core.UILazyEventDispatch = async (args, env) => {
             const uid = await interpretate(args[0], env);
             const type = await interpretate(args[1], env);
-
+            
+            if (!core.UILazyEventDispatch[uid]) throw `Event listener ${uid} does not exist`;
             core.UILazyEventDispatch[uid](type, args[2], env);
         }  
 
@@ -338,7 +339,11 @@ WebUIInitializationScript = With[{},
                 this.event = opts.uid
                 const self = this;
                 core.UILazyEventDispatch[this.event] = function (type, data, env) {
-                    self.listeners[type](data, env);
+                    if (type in self.listeners) {
+                        self.listeners[type](data, env);
+                    } else {
+                        console.warn(`Pattern ${type} does not exist. Ignoring...`);
+                    }
                 };
 
                 const scoped = opts.target.bind(self);
