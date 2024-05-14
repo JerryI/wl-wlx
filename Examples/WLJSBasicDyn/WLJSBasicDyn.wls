@@ -10,9 +10,9 @@ PacletRepositories[{
   Github -> "https://github.com/KirillBelovTest/Objects",
   Github -> "https://github.com/KirillBelovTest/Internal",
   Github -> "https://github.com/JerryI/CSocketListener" -> "dev2024",
-  Github -> "https://github.com/KirillBelovTest/TCPServer",
-  Github -> "https://github.com/KirillBelovTest/HTTPHandler",
-  Github -> "https://github.com/KirillBelovTest/WebSocketHandler",
+  Github -> "https://github.com/JerryI/TCPServer",
+  Github -> "https://github.com/JerryI/HTTPHandler",
+  Github -> "https://github.com/JerryI/WebSocketHandler",
   Github -> "https://github.com/JerryI/wl-wljs-packages",  
   Github -> "https://github.com/JerryI/wl-misc" -> "dev"
 }]
