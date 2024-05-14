@@ -8,7 +8,7 @@ SetDirectory[If[StringQ[NotebookDirectory[] ], NotebookDirectory[], DirectoryNam
 
 PacletRepositories[{
   Github -> "https://github.com/KirillBelovTest/Objects",
-  Github -> "https://github.com/KirillBelovTest/Internal",
+  Github -> "https://github.com/JerryI/Internal",
   Github -> "https://github.com/JerryI/CSocketListener" -> "dev2024",
   Github -> "https://github.com/JerryI/TCPServer",
   Github -> "https://github.com/JerryI/HTTPHandler"
