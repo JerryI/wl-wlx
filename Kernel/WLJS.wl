@@ -11,6 +11,8 @@ Begin["`Private`"]
 SetAttributes[Offload, HoldFirst]
 SetAttributes[FrontEndOnly, HoldFirst]
 
+System`FrontEndVirtual;
+System`AttachDOM;
 
 WLJSHeader[list1_String, OptionsPattern[]] := With[{list = OptionValue["List"]},
     StringRiffle[StringTemplate["<script type=\"module\" src=\"``\"></script>"]/@ Join[(StringTrim/@StringSplit[list1, "\n"]), list], "\n"]
@@ -30,8 +32,8 @@ WLJS[expr__, OptionsPattern[]] := With[{uid = CreateUUID[], class = OptionValue[
             StringTemplate["<div class=\"wljs-object ``\" id=\"``\"></div><script type=\"module\">const global = {}; await interpretate(``, {local:{}, global: global})</script>"][class, uid, ExportString[body, "ExpressionJSON", "Compact"->0]]
         ]
     ,
-        With[{body = Global`FrontEndVirtual[{
-            Global`AttachDOM[uid],
+        With[{body = FrontEndVirtual[{
+            AttachDOM[uid],
             CompoundExpression[expr]
         }]},
             StringTemplate["<div class=\"wljs-object ``\" id=\"``\"></div><script type=\"module\">const global = {}; await interpretate(``, {local:{}, global: global})</script>"][class, uid, ExportString[body, "ExpressionJSON", "Compact"->0]]
@@ -46,8 +48,8 @@ WLJS[expr_, OptionsPattern[]] := With[{uid = CreateUUID[], class = OptionValue["
             StringTemplate["<div class=\"wljs-object ``\" id=\"``\"></div><script type=\"module\">const global = {}; await interpretate(``, {local:{}, global: global})</script>"][class, uid, ExportString[body, "ExpressionJSON", "Compact"->0]]
         ]
     ,
-        With[{body = Global`FrontEndVirtual[{
-            Global`AttachDOM[uid],
+        With[{body = FrontEndVirtual[{
+            AttachDOM[uid],
             expr
         }]},
             StringTemplate["<div class=\"wljs-object ``\" id=\"``\"></div><script type=\"module\">const global = {}; await interpretate(``, {local:{}, global: global})</script>"][class, uid, ExportString[body, "ExpressionJSON", "Compact"->0]]
