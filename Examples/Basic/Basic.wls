@@ -12,7 +12,7 @@ PacletRepositories[{
   Github -> "https://github.com/JerryI/CSocketListener" -> "dev2024",
   Github -> "https://github.com/JerryI/TCPServer",
   Github -> "https://github.com/JerryI/HTTPHandler"
-}, "Passive"->True]
+}]
 
 <<KirillBelov`CSockets`
 <<KirillBelov`Objects`
