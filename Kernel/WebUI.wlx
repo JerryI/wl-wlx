@@ -207,11 +207,11 @@ WebUIFetch[expr_, client_:Global`$Client(*`*), OptionsPattern[]] := With[{format
 
         With[{result = Switch[format,
             "Raw",
-                URLDecode[payload],
+                FromCharacterCode@ToCharacterCode[URLDecode[payload], "UTF-8"],
             "ExpressionJSON",
-                ImportString[URLDecode[payload], "ExpressionJSON"],
+                ImportString[FromCharacterCode@ToCharacterCode[URLDecode[payload], "UTF-8"], "ExpressionJSON"],
             _,
-                ImportString[URLDecode[payload], "JSON"]
+                ImportString[FromCharacterCode@ToCharacterCode[URLDecode[payload], "UTF-8"], "JSON"]
         ]},
             If[FailureQ[result],
                 EventFire[promise, Reject, result]
@@ -235,8 +235,8 @@ WebUIInitializationScript = With[{},
             const result = await interpretate(args[0]);
             const uid = await interpretate(args[1]);
             console.warn("A request from server");
-            //console.log(result);
-            //console.log(JSON.stringify(result));
+            console.log(result);
+            console.log(JSON.stringify(result));
 
             server.emitt(uid, '"' + encodeURIComponent(JSON.stringify(result)) + '"');
         }
