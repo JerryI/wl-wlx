@@ -151,7 +151,7 @@ tokenizer[s_, r_, str_] :=
     (* HTML/XML properties passed as class="{Class}", usually constants for styles and etc *)  
     prop = 
      StringCases[element, 
-      RegularExpression["(\\w*)=\"([^\"|=|{|}]*)\\{("<>wlinset<>")\\}([^\"|=|{|}]*)\""] -> ("$1" -> {"$2", "$3", "$4"}) ],
+      RegularExpression["([\\w|\\-]*)=\"([^\"|=|{|}]*)\\{("<>wlinset<>")\\}([^\"|=|{|}]*)\""] -> ("$1" -> {"$2", "$3", "$4"}) ],
 
     (* static properties like style="background-color: red;" *)
     common = 
