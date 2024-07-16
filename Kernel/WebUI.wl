@@ -16,7 +16,6 @@ WebUIContainer::usage = ""
 WebUIContainerChild::usage = ""
 
 
-
 WebUIJSBind::usage = ""
 WebUIOnLoad::usage = ""
 
@@ -27,13 +26,11 @@ WebUIKeyListener::usage = ""
 
 WebUIFetch::usage = ""
 
+UILazyLoad;
 
 
-Begin["`Private`"]
-
-$DefaultSerializer = ExportByteArray[#, "ExpressionJSON"]&
-ImportComponent[FileNameJoin[{$InputFileName // DirectoryName, "WebUI.wlx"}], "Localize"->False];
-
-End["`Private`"]
+Block[{$DefaultSerializer = ExportByteArray[#, "ExpressionJSON"]&},
+    ImportComponent[FileNameJoin[{$InputFileName // DirectoryName, "WebUI.wlx"}], "Localize"->False];
+];
 
 EndPackage[];
