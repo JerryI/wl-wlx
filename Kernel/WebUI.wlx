@@ -1,7 +1,7 @@
 (* /* WLX Lazy loader */ *)
 (* /* holds expressions inside and loads by a signal via WebSockets */ *)
 
-WebUILazyLoad[content_, OptionsPattern[]] := With[{event = EventClone[OptionValue["Event"]], uid = CreateUUID[]},
+WebUILazyLoad[content_, OptionsPattern[]] := With[{event = EventClone[OptionValue["Event"]], uid = CreateUUID[], tag = OptionValue["Tag"], class = OptionValue["Class"]},
     EventHandler[event, {
         
     "Load" -> Function[data,
@@ -34,11 +34,10 @@ WebUILazyLoad[content_, OptionsPattern[]] := With[{event = EventClone[OptionValu
 
     }];
 
-
-    <div id="{uid}"></div>
+    StringJoin["<", tag, " id=\"", uid, "\" class=\"", class, "\">", "<", "/", tag, ">"]
 ];
 
-Options[WebUILazyLoad] = {"Event" -> ""};
+Options[WebUILazyLoad] = {"Event" -> "", "Tag" -> "div", "Class" -> ""};
 
 SetAttributes[WebUILazyLoad, HoldFirst];
 
