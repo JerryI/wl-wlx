@@ -128,7 +128,7 @@ escapeReplacement[handler_, pattern_] := With[{uid = Unique[]//ToString},
 (*** Tokenizer for the WLX subset ***)
 
 (* regexp for the inset of the WL expression *)
-wlinset = "[\\w|@|\\[|\\]|,|\\>|;|:|\\<|\\||\\/|\\+|\\$|{|}|\\\"|\\-|\\.|\\s|\\d]*";
+wlinset = "[\\w|@|\\[|\\]|,|#|)|(|\\>|;|:|\\<|\\||\\/|\\+|\\$|{|}|\\\"|\\-|\\.|\\s|\\d]*";
 
 tokenizer[s_, r_, str_] := 
  With[{element = 
