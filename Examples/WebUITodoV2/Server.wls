@@ -59,6 +59,8 @@ WLJS`PM`Repositories[{
   Github -> "https://github.com/JerryI/wljs-interpreter" -> "dev"
 }]
 
+$DefaultSerializer = ExportByteArray[#, "ExpressionJSON"]&
+
 (* import libs data *)
 Map[Function[path,
     Block[{System`$RemotePackageDirectory = FileNameJoin[{"wljs_packages", FileNameSplit[path] // First}]},

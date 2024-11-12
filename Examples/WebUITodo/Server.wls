@@ -19,6 +19,8 @@ PacletRepositories[{
 
 RandomWord[];
 
+$DefaultSerializer = ExportByteArray[#, "ExpressionJSON"]&
+
 (* Here you can configure *)
 ENV = <|
     "WSPort"->8011,
