@@ -181,7 +181,7 @@ create[controls_] := Module[{
       {Blue, PointSize[0.1], Point @ Offload @ enemies},
       RGBColor[1.0 - 0.1764, 1.0 - 0.8313, 1.0 - 0.74901], Point[Offload @ projectiles],
       RGBColor[0.1764, 0.8313, 0.74901], PointSize[0.05], Point[Offload @ positions]
-   }, TransitionDuration->1, TransitionType->"Linear", PlotRange->{{-1,1}, {-1,1}}]
+   }, TransitionType->None, PlotRange->{{-1,1}, {-1,1}}]
 ];
 
 
