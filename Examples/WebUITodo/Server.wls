@@ -19,7 +19,7 @@ PacletRepositories[{
 
 RandomWord[];
 
-$DefaultSerializer = ExportByteArray[#, "ExpressionJSON"]&
+
 
 (* Here you can configure *)
 ENV = <|
@@ -56,6 +56,9 @@ Get[FileNameJoin[{Directory[]//ParentDirectory//ParentDirectory,"Kernel", "WebUI
 <<JerryI`Misc`Async`
 
 <<JerryI`WLJSPM`
+
+$DefaultSerializer = ExportByteArray[#, "ExpressionJSON"]&
+
 
 WLJS`PM`Repositories[{
   Github -> "https://github.com/JerryI/wljs-interpreter" -> "dev"

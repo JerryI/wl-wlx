@@ -17,47 +17,57 @@ ProcessString[pstr_String, OptionsPattern[]] := Module[{str, open, close, singul
     (* three types of HTML tags *)
     {open, close, singular} = parseTags[str];
 
-    (* parse all tokens *)
-    tokens = SortBy[
-       Join[tokenizer[#, 1, str] & /@ open, tokenizer[#, 0, str] & /@ singular, 
-        tokenizer[#, -1, str] & /@ close], #["pos"][[1]] &];
+    If[Length[open] > 0 || Length[close] > 0 || Length[singular] > 0,
+
+      (* parse all tokens *)
+      tokens = SortBy[
+         Join[tokenizer[#, 1, str] & /@ open, tokenizer[#, 0, str] & /@ singular, 
+          tokenizer[#, -1, str] & /@ close], #["pos"][[1]] &];
 
 
-    fetchInnerText[tokens, str, OptionValue["Trimmer"], commentsList];
-    tokens = Join[tokens, fetchInnerText[tokens, str, OptionValue["Trimmer"], commentsList]];
-    tokens = SortBy[tokens, #["pos"][[1]] &];
+      fetchInnerText[tokens, str, OptionValue["Trimmer"], commentsList];
+      tokens = Join[tokens, fetchInnerText[tokens, str, OptionValue["Trimmer"], commentsList]];
+      tokens = SortBy[tokens, #["pos"][[1]] &];
 
-    
+      
 
-    (* build AST tree *)
-    tree = ast[tokens, str];
+      (* build AST tree *)
+      tree = ast[tokens, str];
+      If[FailureQ[tree], Return[$Failed] ];
 
-    (* generate rules of string replacement *)
-    placeholders = {generatePlaceholders[tree]}//Flatten;
+      (* generate rules of string replacement *)
+      placeholders = {generatePlaceholders[tree]}//Flatten;
 
 
-    (* generate sanitized list of expressions *)
-    pureWLCode = ToExpression[#, InputForm, Hold2] & /@ SplitExpression[
-        With[{rules = Values[placeholders]},
-            StringReplacePart[str, rules[[All, 1]], rules[[All, 2]]]
-        ]
+      (* generate sanitized list of expressions *)
+      pureWLCode = ToExpression[#, InputForm, Hold2] & /@ SplitExpression[
+          With[{rules = Values[placeholders]},
+              StringReplacePart[str, rules[[All, 1]], rules[[All, 2]]]
+          ]
+      ];
+
+      (* construct WL expression from WLX *)
+      map = (ToExpression[#[[2, 1]]] -> constructWL[#[[1]]]) & /@ placeholders;
+      map = With[{expr = #[[2]]}, #[[1]]->Hold2[expr]] & /@ map;
+
+      (* restore dangerous functions *)
+
+      map = map  //. {FakeFlatten -> Flatten, StringRiffleFake -> StringRiffle, 
+                      StringJoinFake -> StringJoin, FakeBlock -> Block, FakeHold[x_] :> x,
+                      ToStringFake -> ToStringRiffle
+                  };
+
+
+      (* hydrate with WLX the original code again *)
+      pureWLCode = pureWLCode /. map /. escapedCode;
+    ,
+      (* normal WL code with no tags*)
+      pureWLCode = ToExpression[#, InputForm, Hold2] & /@ SplitExpression[
+          pstr
+      ];
     ];
 
-    (* construct WL expression from WLX *)
-    map = (ToExpression[#[[2, 1]]] -> constructWL[#[[1]]]) & /@ placeholders;
-    map = With[{expr = #[[2]]}, #[[1]]->Hold2[expr]] & /@ map;
-
-    (* restore dangerous functions *)
     
-    map = map  //. {FakeFlatten -> Flatten, StringRiffleFake -> StringRiffle, 
-                    StringJoinFake -> StringJoin, FakeBlock -> Block, FakeHold[x_] :> x,
-                    ToStringFake -> ToStringRiffle
-                };
-
-    
-    (* hydrate with WLX the original code again *)
-
-    pureWLCode = pureWLCode /. map /. escapedCode;
     
 
     (* EXIT::1 *)
@@ -203,9 +213,15 @@ TokenGroup[{Token[A___], TokenGroup[B_], n___}] := TokenGroup[Flatten[{Token[A],
 
 (* i :> WL *)
 
+ast::nonballanced = "Non ballanced: ``";
+
 ast[tokens_List, original_String] := 
  Module[{level = 0, index = 1, bra, depth, head, exp = {}, last = {}, group, tail},
-  
+
+  If[AnyTrue[tokens, FailureQ],
+    Return[$Failed];
+  ];
+
   (* bra stands for the level of hierarch. *)
   bra = 0; depth = 0;
   If[Length[tokens] == 0, Return[Null]];
@@ -215,7 +231,11 @@ ast[tokens_List, original_String] :=
    If[Length[tokens] > 1, 
 
     (* process the rest independently *)
-    Return[TokenGroup[Flatten[{Token["Singular", head], ast[Drop[tokens, 1], original]}]]], 
+    With[{processed = ast[Drop[tokens, 1], original]},
+      If[FailureQ[processed], Return[processed] ];
+      Return[TokenGroup[Flatten[{Token["Singular", head], processed}] ] ]
+    ] 
+   , 
 
     (* return that one *)
     Return[Token["Singular", head]]];
@@ -237,6 +257,7 @@ ast[tokens_List, original_String] :=
       (* extract the entire expression undeneath *)
       exp = Take[tokens, i];
       last = Drop[tokens, i];
+
       tail = t;
       Break[];
       
@@ -257,17 +278,36 @@ ast[tokens_List, original_String] :=
   exp = If[depth > 0,
     (* if it contains subexpressions *)
 
+    If[Length[exp] == 0,
+      Message[ast::nonballanced, StringTemplate["tag `` at ``"][head["head"], head["pos"] ] ];
+      Return[$Failed];
+    ];
+
+    
+
     Token["Nested", head, tail, 
-     ast[Drop[Drop[exp, 1], -1], original]]
+     ast[Drop[Drop[exp, 1], -1], original]
+    ]
     ,
 
     (* if not *)
-    Token["Normal", head, tail]
+    
+      If[!AssociationQ[tail],
+        Message[ast::nonballanced, StringTemplate["tag `` at `` probably is not closed"][head["head"], head["pos"] ] ];
+        Return[$Failed];
+      ];
+    
+      Token["Normal", head, tail]
     ];
   
   (* parse the rest *)
   If[Length[last] > 0,
-   TokenGroup[Flatten[{exp, ast[last, original]}]]
+    With[{processed = ast[last, original]},
+      If[FailureQ[processed], Return[processed] ];
+
+      TokenGroup[Flatten[{exp, processed}] ]
+    ]
+   
    ,
    exp
    ]

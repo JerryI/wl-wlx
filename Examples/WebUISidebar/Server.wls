@@ -55,6 +55,9 @@ Get[FileNameJoin[{Directory[]//ParentDirectory//ParentDirectory,"Kernel", "WebUI
 
 <<JerryI`WLJSPM`
 
+$DefaultSerializer = ExportByteArray[#, "ExpressionJSON"]&
+
+
 WLJS`PM`Repositories[{
   Github -> "https://github.com/JerryI/wljs-interpreter" -> "dev"
 }]
