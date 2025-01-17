@@ -1,36 +1,34 @@
 BeginPackage["JerryI`WLX`WebUI`", {"JerryI`WLX`Importer`", "JerryI`WLX`", "KirillBelov`WebSocketHandler`", "JerryI`Misc`Events`", "JerryI`Misc`Events`Promise`"}]
 
-WebUIInitializationScript::usage = "Supporting JS code. Embed it into the head section of your main page template"
+WebUILazyLoad;
+WebUISubmit;
+WebUILocation;
+WebUIClose;
+WebUIRefresh;
+WebUIContainer;
+WebUIJSBind;
+WebUIOnLoad;
+WebUIEventListener;
+WebUIKeyListener;
+WebUIFetch;
+WebUIInitializationScript;
 
-WebUILazyLoad::usage = ""
+Begin["`Private`"]
 
+{
+    WebUILazyLoad, 
+    WebUISubmit, 
+    WebUILocation, 
+    WebUIClose, 
+    WebUIRefresh, 
+    WebUIContainer, 
+    WebUIJSBind, 
+    WebUIOnLoad, 
+    WebUIEventListener, 
+    WebUIKeyListener, 
+    WebUIFetch, 
+    WebUIInitializationScript
+} = ImportComponent[FileNameJoin[{$InputFileName // DirectoryName, "WebUI.wlx"}] ];
 
-WebUISubmit::usage = ""
-WebUILocation::usage = ""
-
-WebUILazyLoadDataProvided::usage = ""
-
-WebUIClose::usage = ""
-WebUIRefresh::usage = ""
-WebUIContainer::usage = ""
-WebUIContainerChild::usage = ""
-
-
-WebUIJSBind::usage = ""
-WebUIOnLoad::usage = ""
-
-WebUIAliveQ::usage = ""
-
-WebUIEventListener::usage = ""
-WebUIKeyListener::usage = ""
-
-WebUIFetch::usage = ""
-
-UILazyLoad;
-
-
-Block[{$DefaultSerializer = ExportByteArray[#, "ExpressionJSON"]&},
-    ImportComponent[FileNameJoin[{$InputFileName // DirectoryName, "WebUI.wlx"}], "Localize"->False];
-];
-
+End[]
 EndPackage[];

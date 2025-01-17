@@ -1,6 +1,13 @@
 (* /* WLX Lazy loader */ *)
 (* /* holds expressions inside and loads by a signal via WebSockets */ *)
 
+$DefaultSerializer = ExportByteArray[#, "ExpressionJSON"]&
+
+WebUIServerReference = If[TrueQ[Internal`Kernel`WLJSQ], "kernel", "self"];
+
+System`WebUILazyLoadDataProvided(*`*);
+System`UILazyLoad(*`*);
+
 WebUILazyLoad[content_, OptionsPattern[]] := With[{event = EventClone[OptionValue["Event"]], uid = CreateUUID[], tag = OptionValue["Tag"], class = OptionValue["Class"]},
     EventHandler[event, {
         
@@ -41,6 +48,9 @@ Options[WebUILazyLoad] = {"Event" -> "", "Tag" -> "div", "Class" -> ""};
 
 SetAttributes[WebUILazyLoad, HoldFirst];
 
+System`UILocation(*`*);
+System`UILocationBlank(*`*);
+
 WebUISubmit[expr_, client_:Global`$Client (*`*)] := WebSocketSend[client, $DefaultSerializer @ expr ];
 
 WebUILocation[loc_String, client_:Global`$Client (*`*), OptionsPattern[]] := With[{},
@@ -52,6 +62,8 @@ WebUILocation[loc_String, client_:Global`$Client (*`*), OptionsPattern[]] := Wit
 ]
 
 Options[WebUILocation] = {"Target" -> "Same", "Features"->False}
+
+System`UIClose;(*`*)
 
 WebUIClose[cli_:Global`$Client (*`*)] := WebUISubmit[UIClose[], cli]
 
@@ -96,6 +108,11 @@ Options[WebUIRefresh] = {"Event" -> "", "Class"->""};
 SetAttributes[WebUIRefresh, HoldAll];
 
 (* /* WebUIContainer */ *)
+
+System`UILazyContainer(*`*);
+
+System`WebUIContainerChild(*`*);
+
 WebUIContainer[arg_, OptionsPattern[]] := With[{Uid = CreateUUID[], Event = OptionValue["Event"], after = OptionValue["ApplyAfter"]},
     EventHandler[EventClone[Event], {
         "Append" -> Function[data,
@@ -130,6 +147,8 @@ Options[WebUIContainer] = {"Event" -> Null, "ApplyAfter" -> Identity};
 (* /* WLX JS Binder */ *)
 (* /* connects arbitary JS scripts with WL Event system */ *)
 
+System`UILazyEventDispatch(*`*);
+
 WebUIJSBind[Script__String, OptionsPattern[]] := With[{Event = OptionValue["Event"], Uid = CreateUUID[], Str = StringJoin[Script]},
     EventHandler[EventClone[Event], {any_String :> Function[data,
         If[!AssociationQ[data], Return[]];
@@ -151,7 +170,7 @@ Options[WebUIJSBind] = {"Event" -> "", "ScriptTag"->True};
 
 WebUIOnLoad[OptionsPattern[]] := With[{Event = OptionValue["Event"], Type = OptionValue["Pattern"]},
     <script type="module">
-        server.emitt('<Event/>', 'True', '<Type/>');
+        server.<WebUIServerReference/>.emitt('<Event/>', 'True', '<Type/>');
     </script>
 ]
 
@@ -163,11 +182,13 @@ Options[WebUIOnLoad] = {"Event" -> "xyz", "Pattern"->"Default"};
 (* /* WLX Event listener */ *)
 (* /* adds an event listener to an DOM element and sends generated data to Kernel via WebSockets */ *)
 
+
+
 WebUIEventListener[OptionsPattern[]] := With[{Pattern = OptionValue["Pattern"], Property = OptionValue["Property"], Event = OptionValue["Event"], Type = OptionValue["Type"], Id = OptionValue["Id"]},
     <script type="module">
         const el = document.getElementById('<Id/>');
         el.addEventListener('<Type/>', function (e) {
-            server.emitt('<Event/>', '"'+el.<Property/>+'"', '<Pattern/>');
+            server.<WebUIServerReference/>.emitt('<Event/>', '"'+el.<Property/>+'"', '<Pattern/>');
         });
     </script>
 ];
@@ -180,7 +201,7 @@ WebUIKeyListener[OptionsPattern[]] := With[{Pattern = OptionValue["Pattern"], Ev
     <script type="module">
         const keyListener = (e) => {
             console.log(['<Event/>', e.keyCode, '<Pattern/>']);
-            server.emitt('<Event/>', e.keyCode, '<Pattern/>');
+            server.<WebUIServerReference/>.emitt('<Event/>', e.keyCode, '<Pattern/>');
         }
         core.UILazyEventDispatch['<InternalEvent/>'] = function (type, data, env) {
             console.log(type);
@@ -198,7 +219,7 @@ WebUIKeyListener[OptionsPattern[]] := With[{Pattern = OptionValue["Pattern"], Ev
 
 Options[WebUIKeyListener] = {"Event"->"", "Pattern"->"Pressed"};
 
-
+System`UIAsk(*`*);
 
 WebUIFetch[expr_, client_:Global`$Client(*`*), OptionsPattern[]] := With[{format = OptionValue["Format"], event = CreateUUID[], promise = Promise[]},
     EventHandler[event, Function[payload,
@@ -220,7 +241,7 @@ WebUIFetch[expr_, client_:Global`$Client(*`*), OptionsPattern[]] := With[{format
         ]
     ]];
 
-    WebUISubmit[Global`UIAsk[expr, event](*`*), client];
+    WebUISubmit[UIAsk[expr, event], client];
 
     promise
 ]
@@ -237,7 +258,7 @@ WebUIInitializationScript = With[{},
             //console.log(result);
             //console.log(JSON.stringify(result));
 
-            server.emitt(uid, '"' + encodeURIComponent(JSON.stringify(result)) + '"');
+            server.<WebUIServerReference/>.emitt(uid, '"' + encodeURIComponent(JSON.stringify(result)) + '"');
         }
 
         core.UIClose = async (args, env) => {
@@ -416,3 +437,17 @@ WebUIInitializationScript = With[{},
     </script>
 ];
 
+{
+    WebUILazyLoad, 
+    WebUISubmit, 
+    WebUILocation, 
+    WebUIClose, 
+    WebUIRefresh, 
+    WebUIContainer, 
+    WebUIJSBind, 
+    WebUIOnLoad, 
+    WebUIEventListener, 
+    WebUIKeyListener, 
+    WebUIFetch, 
+    WebUIInitializationScript
+}
