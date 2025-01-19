@@ -137,14 +137,14 @@ SetAttributes[wcache, HoldFirst]
 
 cache = Identity[#1]&
 
-Print["Caching is not enabled! Type JerryI`WLX`Importer`CacheControl[True] to set it for all IO operations"];
+Print["Caching is enabled for 1 hour! Type JerryI`WLX`Importer`Private`CacheControl[False] to disable it"];
 
 cache = wcache; cinterval = "Hour";
 
-CacheContol[False] := (cache = Identity; "Caching was disabled") 
-CacheContol[True]  := (cache = wcache; cinterval = "Minute"; "Caching was enabled for 1 minute") 
-CacheContol["Minute"]  := (cache = wcache; cinterval = "Minute"; "Caching was enabled for 1 minute") 
-CacheContol["Hour"]  := (cache = wcache; cinterval = "Hour"; "Caching was enabled for 1 hour") 
+CacheControl[False] := (cache = Identity[#1]&; "Caching was disabled") 
+CacheControl[True]  := (cache = wcache; cinterval = "Minute"; "Caching was enabled for 1 minute") 
+CacheControl["Minute"]  := (cache = wcache; cinterval = "Minute"; "Caching was enabled for 1 minute") 
+CacheControl[date_DateObject]  := (cache = wcache; cinterval = date; "Caching was enabled for custom interval") 
 
 End[]
 
