@@ -70,7 +70,7 @@ WebUIClose[cli_:Global`$Client (*`*)] := WebUISubmit[UIClose[], cli]
 (* /* WLX Refresher */ *)
 (* /* holds expressions inside and loads by a signal via WebSockets */ *)
 
-WebUIRefresh[Content__, OptionsPattern[]] := With[{event = OptionValue["Event"], uid = CreateUUID[], Class = OptionValue["Class"], Str = StringRiffle[{Content} // Flatten]},
+WebUIRefresh[Content__, OptionsPattern[]] := With[{event = OptionValue["Event"], uid = CreateUUID[], style = OptionValue["Style"], Class = OptionValue["Class"], Str = StringRiffle[{Content} // Flatten]},
     EventHandler[event, {
         
     "Refresh" -> Function[data,
@@ -98,12 +98,12 @@ WebUIRefresh[Content__, OptionsPattern[]] := With[{event = OptionValue["Event"],
     }];
 
 
-    <div id="{uid}" class="{Class}">
+    <div id="{uid}" class="{Class}" style="{style}">
         <Str/>
     </div>
 ];
 
-Options[WebUIRefresh] = {"Event" -> "", "Class"->""};
+Options[WebUIRefresh] = {"Event" -> "", "Class"->"", "Style"->""};
 
 SetAttributes[WebUIRefresh, HoldAll];
 
