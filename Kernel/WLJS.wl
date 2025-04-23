@@ -1,14 +1,12 @@
-BeginPackage["JerryI`WLX`WLJS`", {"JerryI`Misc`Events`"}]
+BeginPackage["JerryI`WLX`WLJS`", {"JerryI`Misc`Events`", "JerryI`Misc`WLJS`Transport`"}]
 
 WLJSHeader::usage = "place scripts of WLJS libs"
 WLJS::usage = "WLJS[expr] embeds any wolfram expression and executes it using WLJS"
 
 FrontEndOnly::usage = "Hold an expression for frontend"
-Offload::usage = ""
 
 Begin["`Private`"]
 
-SetAttributes[Offload, HoldFirst]
 SetAttributes[FrontEndOnly, HoldFirst]
 
 System`AttachDOM;
