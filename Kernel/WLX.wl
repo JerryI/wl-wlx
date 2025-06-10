@@ -131,8 +131,8 @@ escape[str_String] := Module[{rules = {}, populate, newstr},
 ]
 
 escapeReplacement[handler_, pattern_] := With[{uid = Unique[]//ToString},
-  handler[ToExpression["EscapedExpr"<>uid, InputForm] -> pattern]; 
-  "<EscapedExpr"<>uid<>"/>"
+  handler[ToString[("EscapedExpr"<>uid), InputForm] -> pattern]; 
+  ToString[("EscapedExpr"<>uid), InputForm]
 ]
 
 (*** Tokenizer for the WLX subset ***)
