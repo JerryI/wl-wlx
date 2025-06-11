@@ -52,14 +52,20 @@ ProcessString[pstr_String, OptionsPattern[]] := Module[{str, open, close, singul
 
       (* restore dangerous functions *)
 
+      map = map /. escapedCode;
+
+      ClearAll /@ escapedCode[[All,1]];
+
       map = map  //. {FakeFlatten -> Flatten, StringRiffleFake -> StringRiffle, 
                       StringJoinFake -> StringJoin, FakeBlock -> Block, FakeHold[x_] :> x,
                       ToStringFake -> ToStringRiffle
                   };
 
+      
+
 
       (* hydrate with WLX the original code again *)
-      pureWLCode = pureWLCode /. map /. escapedCode;
+      pureWLCode = pureWLCode /. map;
     ,
       (* normal WL code with no tags*)
       pureWLCode = ToExpression[#, InputForm, Hold2] & /@ SplitExpression[
@@ -130,9 +136,9 @@ escape[str_String] := Module[{rules = {}, populate, newstr},
   {newstr, rules // Flatten}
 ]
 
-escapeReplacement[handler_, pattern_] := With[{uid = Unique[]//ToString},
-  handler[ToString[("EscapedExpr"<>uid), InputForm] -> pattern]; 
-  ToString[("EscapedExpr"<>uid), InputForm]
+escapeReplacement[handler_, pattern_] := With[{unique = Unique["EscapedExpr"]},
+  handler[unique -> pattern]; 
+  "<"<>ToString[unique, InputForm]<>"/>"
 ]
 
 (*** Tokenizer for the WLX subset ***)
