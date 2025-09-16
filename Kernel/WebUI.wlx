@@ -407,7 +407,10 @@ WebUIInitializationScript = With[{},
             const uid = await interpretate(args[0], env);
             const type = await interpretate(args[1], env);
             
-            if (!core.UILazyEventDispatch[uid]) throw `Event listener ${uid} does not exist`;
+            if (!core.UILazyEventDispatch[uid]) {
+                console.warn(`Event listener ${uid} does not exist`);
+                return;
+            }
             core.UILazyEventDispatch[uid](type, args[2], env);
         }  
 
