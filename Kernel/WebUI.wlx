@@ -230,6 +230,8 @@ WebUIFetch[expr_, client_:Global`$Client(*`*), OptionsPattern[]] := With[{format
                 FromCharacterCode@ToCharacterCode[URLDecode[payload], "UTF-8"],
             "ExpressionJSON",
                 ImportString[FromCharacterCode@ToCharacterCode[URLDecode[payload], "UTF-8"], "ExpressionJSON"],
+            "RawJSON",
+                ImportString[FromCharacterCode@ToCharacterCode[URLDecode[payload], "UTF-8"], "RawJSON"],    
             _,
                 ImportString[FromCharacterCode@ToCharacterCode[URLDecode[payload], "UTF-8"], "JSON"]
         ]},
