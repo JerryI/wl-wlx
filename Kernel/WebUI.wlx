@@ -188,7 +188,7 @@ WebUIEventListener[OptionsPattern[]] := With[{Pattern = OptionValue["Pattern"], 
     <script type="module">
         const el = document.getElementById('<Id/>');
         el.addEventListener('<Type/>', function (e) {
-            server.<WebUIServerReference/>.io.fire('<Event/>', String(el.<Property/>), '<Pattern/>');
+            server.<WebUIServerReference/>.io.fire('<Event/>', encodeURIComponent(String(el.<Property/>)), '<Pattern/>');
         });
     </script>
 ];
